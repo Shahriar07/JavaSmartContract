@@ -1,0 +1,33 @@
+---
+name: kona-network
+version: 1.0.0
+client:
+    organization: orgkona
+    connection:
+        timeout:
+            peer:
+                endorser: '300'
+            orderer: '300'
+channels:
+    konachannel:
+        orderers:
+        - konaorderer.konai.com
+        peers:
+            kslpeer1.orgkona.konai.com: {}
+organizations:
+    orgkona:
+        mspid: OrgKonaMSP
+        peers:
+        - kslpeer1.orgkona.konai.com
+        certificateAuthorities:
+        - ca.konai.com
+orderers:
+    konaorderer.konai.com:
+        url: grpc://10.88.233.220:7050
+peers:
+    kslpeer1.orgkona.konai.com:
+        url: grpc://10.88.233.220:7051
+certificateAuthorities:
+    ca.konai.com:
+        url: http://10.88.233.220:7054
+        caName: ca.konai.com
