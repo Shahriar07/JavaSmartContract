@@ -10,4 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 public interface DownloadService {
 
     RestResponse downloadDocument(String fileName, String documentKey);
+
+    RestResponse verifyDocument(String fileName, String documentKey, String documentHash);
 }

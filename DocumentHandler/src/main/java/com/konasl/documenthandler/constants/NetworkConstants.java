@@ -28,7 +28,8 @@ public class NetworkConstants {
     public static final String UPLOAD_METADATA_FUNCTION_NAME = "uploadMetadata";
     public static final String UPLOAD_DOC_CHUNK_FUNCTION_NAME = "uploadDocumentChunk";
     public static final String QUERY_CHUNK_COUNT_FUNCTION_NAME = "getDocumentChunkCount";
-    public static final String QUERY_CHUNK_FUNCTION_NAME = "getDocumentChunk";
+    public static final String DOWNLOAD_CHUNK_FUNCTION_NAME = "getDocumentChunk";
+    public static final String QUERY_DOC_HASH_FUNCTION_NAME = "getDocumentHash";
 
 
     @Value("${com.konasl.documenthandler.upload_chunk_size}")

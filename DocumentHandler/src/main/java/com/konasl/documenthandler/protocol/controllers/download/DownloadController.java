@@ -6,7 +6,10 @@ import com.konasl.documenthandler.protocol.RestResponse;
 import com.konasl.documenthandler.protocol.services.download.DownloadService;
 import com.konasl.documenthandler.util.Utility;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -28,8 +31,8 @@ public class DownloadController {
 
     @RequestMapping(value = "/api/document/download", method = RequestMethod.GET)
     public void downloadDocument(HttpServletResponse response,
-                                         @RequestParam("fileName") String fileName,
-                                         @RequestParam("documentKey") @Valid String documentKey
+                                 @RequestParam("fileName") @Valid String fileName,
+                                 @RequestParam("documentKey") @Valid String documentKey
     ) throws IOException {
         RestResponse restResponse = downloadService.downloadDocument(fileName, documentKey);
         if (restResponse == null) {
@@ -42,5 +45,12 @@ public class DownloadController {
         }
         File file = (File) restResponse.getData();
         response = utility.prepareResponseFromFile(file, response);
+    }
+
+    @RequestMapping(value = "/api/document/verify", method = RequestMethod.POST)
+    public RestResponse verifyDocumentHash(@RequestParam("fileName") @Valid String fileName,
+                                           @RequestParam("documentKey") @Valid String documentKey,
+                                           @RequestParam("documentHash") @Valid String documentHash) {
+        return downloadService.verifyDocument(fileName, documentKey, documentHash);
     }
 }

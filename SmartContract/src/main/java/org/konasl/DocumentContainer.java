@@ -8,12 +8,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
 import org.json.JSONObject;
-import org.json.JSONArray;
 import org.konasl.ledgerapi.State;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -36,7 +31,7 @@ public class DocumentContainer extends State {
     private String docKey = "";
 
     @Property()
-    private ArrayList<String> chunkKeyList;
+    private String chunkKeyPrefix;
 
     public DocumentContainer() {
         super();
@@ -57,6 +52,11 @@ public class DocumentContainer extends State {
         return this;
     }
 
+    public DocumentContainer setChunkKeyPrefix(String chunkKeyPrefix) {
+        this.chunkKeyPrefix = chunkKeyPrefix;
+        return this;
+    }
+
     public DocumentContainer setChunkCount(int chunkCount) {
         this.chunkCount = chunkCount;
         return this;
@@ -66,12 +66,6 @@ public class DocumentContainer extends State {
         this.token = token;
         return this;
     }
-
-    public DocumentContainer setChunkKeyList(List<String> keyList) {
-        this.chunkKeyList = new ArrayList<>(keyList);
-        return this;
-    }
-
 
     public DocumentContainer setKey() {
         this.key = State.makeKey(new String[] { this.fileName, this.docKey });
@@ -98,13 +92,13 @@ public class DocumentContainer extends State {
         return fileName;
     }
 
-    public ArrayList<String> getChunkKeyList() {
-        return chunkKeyList;
+    public String getChunkKeyPrefix() {
+        return chunkKeyPrefix;
     }
 
     @Override
     public String toString() {
-        return "DocumentContainer::"  + this.key + "   " + this.fileName + "   " + this.getDocKey() + "   " + this.getToken() + " " + this.getChunkCount() + " " + this.getDocumentHash() + " " +this.getChunkKeyList();
+        return "DocumentContainer:: "  + this.key + "   " + this.getFileName() + "   " + this.getDocKey() + "   " + this.getToken() + " " + this.getChunkCount() + " " + this.getDocumentHash() + " " +this.getChunkKeyPrefix();
     }
 
     /**
@@ -125,13 +119,8 @@ public class DocumentContainer extends State {
             int chunkCount = json.getInt("chunkCount");
             String token = json.getString("token");
             String docKey = json.getString("docKey");
-            JSONArray keyArray = json.getJSONArray("chunkKeyList");
-            
-            ArrayList<String> array = new ArrayList<>();
-            for(int i = 0; i< keyArray.length(); i++) {
-            	array.add((String) keyArray.get(i));
-            }
-            return createInstance(fileName, documentHash, docKey, chunkCount, token, array);
+            String chunkKeyPrefix = json.getString("chunkKeyPrefix");
+            return createInstance(fileName, documentHash, docKey, chunkCount, token, chunkKeyPrefix);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -146,9 +135,9 @@ public class DocumentContainer extends State {
      * Factory method to create a document container object
      */
     public static DocumentContainer createInstance(String fileName, String documentHash, String docKey, int chunkCount,
-                                                   String token, List<String> chunkKeyList) {
+                                                   String token, String chunkKeyPrefix) {
         return new DocumentContainer().setFileName(fileName).setDocumentHash(documentHash).setDocKey(docKey).setChunkCount(chunkCount)
-                .setToken(token).setChunkKeyList(chunkKeyList).setKey();
+                .setToken(token).setChunkKeyPrefix(chunkKeyPrefix).setKey();
     }
 
 }

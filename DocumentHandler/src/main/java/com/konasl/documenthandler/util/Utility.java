@@ -201,4 +201,18 @@ public class Utility {
         if (file.exists()) file.delete();
         return response;
     }
+
+    /**
+     * Prepare document chunk key prefix
+     * chunk count will be added after the prefix to identify a  chunk
+     *
+     * @param fileName
+     * @param docKey
+     * @return
+     */
+    public String prepareChunkKeyPrefix(String fileName, String docKey) {
+        if (fileName == null || docKey == null || fileName.isEmpty() || docKey.isEmpty()) return null;
+
+        return fileName + "_" + docKey;
+    }
 }

@@ -68,4 +68,18 @@ public class Utility {
         System.out.println("hexStringToByteArray duration : " + (end-start));
         return data;
     }
+
+    /**
+     * Prepare chunk key from chunk key prefix
+     *
+     * @param chunkKeyPrefix
+     * @param chunkNumber
+     * @return
+     */
+
+    public  static String prepareChunkKey(String chunkKeyPrefix, int chunkNumber) {
+        if (chunkKeyPrefix == null || chunkKeyPrefix.isEmpty()) return null;
+        // prepare the chunk key for the provided chunk number
+        return (chunkKeyPrefix + "_" + chunkNumber);
+    }
 }

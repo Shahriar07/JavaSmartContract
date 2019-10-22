@@ -33,6 +33,9 @@ public class DownloadServiceImpl implements DownloadService
     @Autowired
     private AuthUser authUser;
 
+    @Autowired
+    Utility utility;
+
     @Override
     public RestResponse downloadDocument(String fileName, String documentKey) {
         long startTime = System.currentTimeMillis();
@@ -74,6 +77,57 @@ public class DownloadServiceImpl implements DownloadService
     }
 
     /**
+     * Verify the document hash from the smart contract
+     *
+     * @param fileName
+     * @param documentKey
+     * @param documentHash
+     * @return
+     */
+    @Override
+    public RestResponse verifyDocument(String fileName, String documentKey, String documentHash) {
+
+        if (fileName == null || documentKey == null || documentHash == null || fileName.isEmpty()
+            || documentKey.isEmpty() || documentHash.isEmpty())
+        {
+            System.out.println("Input data verification failed");
+            return new RestResponse(ResponseCodeEnum.DOCUMENT_DATA_VERIFICATION_FAILED);
+        }
+
+        long startTime = System.currentTimeMillis();
+        System.out.println("Start time : " + startTime);
+        Network network = authUser.authUserandGenerateNetwork();
+        if (network == null) {
+            System.out.println("Network generation failed");
+            return new RestResponse(ResponseCodeEnum.BLOCKCHAIN_NETWORK_CONNECTION_FAILED);
+        }
+
+        try {
+            // Get addressability to document contract
+            Contract contract = network.getContract(NetworkConstants.CHAIN_CODE_NAME, NetworkConstants.CHAIN_CODE_CONTRACT_NAME);
+
+            byte[] response = contract.submitTransaction(NetworkConstants.QUERY_DOC_HASH_FUNCTION_NAME, fileName, documentKey);
+            if (response.length > 0) {
+                String decodedString = new String(response, UTF_8);
+                if (documentHash.equalsIgnoreCase(decodedString)) {
+                    System.out.println("verify duration : " + (System.currentTimeMillis()-startTime));
+                    return new RestResponse(ResponseCodeEnum.SUCCESS);
+                }
+                else {
+                    System.out.println("verify duration : " + (System.currentTimeMillis()-startTime));
+                    return new RestResponse(ResponseCodeEnum.DOCUMENT_HASH_VERIFICATION_FAILED);
+                }
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Error : " + e.getMessage());
+        }
+        System.out.println("verify duration : " + (System.currentTimeMillis()-startTime));
+        return new RestResponse(ResponseCodeEnum.DOCUMENT_HASH_VERIFICATION_FAILED);
+    }
+
+    /**
          * Retrieves the file chunks from the blockchain network
          * Merge the file chunks to prepare the original file
                 *
@@ -88,7 +142,7 @@ public class DownloadServiceImpl implements DownloadService
                 * @throws TimeoutException
                 * @throws InterruptedException
                 */
-        private static File prepareFileFromChunks(Path temporaryPath, String fileName, int chunkCount, String documentKey, Contract contract) throws IOException, FileNotFoundException, GatewayException, TimeoutException, InterruptedException {
+        private File prepareFileFromChunks(Path temporaryPath, String fileName, int chunkCount, String documentKey, Contract contract) throws IOException, FileNotFoundException, GatewayException, TimeoutException, InterruptedException {
 
             if (fileName == null || contract == null || chunkCount < 1) {
                 System.out.println("File data validation failed");
@@ -119,6 +173,8 @@ public class DownloadServiceImpl implements DownloadService
                 }
                 if (originalFile.exists()) {
                     try {
+                        String chunkKeyPrefix = utility.prepareChunkKeyPrefix(fileName, documentKey);
+
                         // use a loop
                         // read bytes from the chunk files
                         // and write bytes to the new file
@@ -126,7 +182,7 @@ public class DownloadServiceImpl implements DownloadService
                             String chunkFileName = count + "__" + fileName;
                             // Download the document
                             long responseStartTime = System.currentTimeMillis();
-                            byte[] response = contract.submitTransaction(NetworkConstants.QUERY_CHUNK_FUNCTION_NAME, fileName, documentKey, ""+count);
+                            byte[] response = contract.submitTransaction(NetworkConstants.DOWNLOAD_CHUNK_FUNCTION_NAME, fileName, documentKey, chunkKeyPrefix, ""+count);
                             //byte[] response2 = hexStringToByteArray(responseString);
                             long writeStartTime = System.currentTimeMillis();
                             System.out.println("Response received for " + chunkFileName + " length " + response.length + " response duration " + (writeStartTime - responseStartTime));
@@ -149,9 +205,7 @@ public class DownloadServiceImpl implements DownloadService
             }
             System.out.println("New File Creation failed newGeneratedFile");
             return null;
-
         }
-
 
 
         /**

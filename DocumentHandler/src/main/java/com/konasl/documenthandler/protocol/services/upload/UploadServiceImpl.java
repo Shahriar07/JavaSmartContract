@@ -32,6 +32,9 @@ public class UploadServiceImpl implements UploadService{
     @Autowired
     NetworkConstants networkConstants;
 
+    @Autowired
+    Utility utility;
+
     private long finishedUploadTask = 0;
     private final Object lock = new Object();
 
@@ -113,23 +116,23 @@ public class UploadServiceImpl implements UploadService{
         Contract contract;
         String fileName;
         String chunkString;
-        String uploadToken;
         String counter;
         String documentKey;
-        public UploadThread(Contract contract, String fileName, String chunkString, String uploadToken, String documentKey, String counter) {
+        String chunkKeyPrefix;
+        public UploadThread(Contract contract, String fileName, String chunkString, String documentKey, String chunkKeyPrefix, String counter) {
             this.contract = contract;
             this.fileName = fileName;
             this.chunkString = chunkString;
-            this.uploadToken = uploadToken;
             this.counter = counter;
             this.documentKey = documentKey;
+            this.chunkKeyPrefix = chunkKeyPrefix;
         }
         public void run() {
             long startTime = System.currentTimeMillis();
             System.out.println("startTime : " + startTime + " chunk " + counter);
             byte[] response = new byte[0];
             try {
-                response = contract.submitTransaction(NetworkConstants.UPLOAD_DOC_CHUNK_FUNCTION_NAME, fileName, chunkString, uploadToken, documentKey, ""+counter);
+                response = contract.submitTransaction(NetworkConstants.UPLOAD_DOC_CHUNK_FUNCTION_NAME, fileName, chunkString, chunkKeyPrefix, documentKey, ""+counter);
             } catch (ContractException e) {
                 e.printStackTrace();
             } catch (TimeoutException e) {
@@ -149,7 +152,7 @@ public class UploadServiceImpl implements UploadService{
      * performs multiple transaction to the blockchain to upload the file
      *
      * @param file
-     * @param chunksize
+     * @param chunkSize
      * @param contract
      * @return
      * @throws IOException
@@ -157,8 +160,8 @@ public class UploadServiceImpl implements UploadService{
      * @throws TimeoutException
      * @throws InterruptedException
      */
-    private RestResponse uploadFileInChunks(MultipartFile file, int chunksize, Contract contract, String documentKey) throws IOException, GatewayException, TimeoutException, InterruptedException, NoSuchAlgorithmException {
-        if (file == null || chunksize < 1) {
+    private RestResponse uploadFileInChunks(MultipartFile file, int chunkSize, Contract contract, String documentKey) throws IOException, GatewayException, TimeoutException, InterruptedException, NoSuchAlgorithmException {
+        if (file == null || chunkSize < 1) {
             System.out.println("File data validation failed");
             return new RestResponse(ResponseCodeEnum.FAILURE, ResponseCodeEnum.DOCUMENT_DATA_VERIFICATION_FAILED);
         }
@@ -170,9 +173,12 @@ public class UploadServiceImpl implements UploadService{
         System.out.println("File size : " + length + ", File Name : " + fileName);
         String fileHash = Utility.prepareSha256HashofMultipartFile(file);
         System.out.println("File hash : " + fileHash);
-        long chunkCount = (length / chunksize) + 1;
+        long chunkCount = (length / chunkSize) + 1;
+
+        String chunkKeyPrefix = utility.prepareChunkKeyPrefix(fileName, documentKey);
+
         // input the metadata to the network
-        String uploadToken = uploadFileMetadataToTheBlockchain(fileName, chunkCount, fileHash, documentKey, contract);
+        String uploadToken = uploadFileMetadataToTheBlockchain(fileName, chunkCount, fileHash, documentKey, chunkKeyPrefix, contract);
         if (uploadToken == null) {
             return new RestResponse(ResponseCodeEnum.FAILURE, ResponseCodeEnum.DOCUMENT_DATA_VERIFICATION_FAILED);
         }
@@ -181,21 +187,21 @@ public class UploadServiceImpl implements UploadService{
         long counter = 0;
         ArrayList<UploadThread> uploadThreads = new ArrayList<>();// = new UploadThread(contract, fileName, chunkString, uploadToken, ""+counter);
         while (start < length) {
-            long end = Math.min(length, start + chunksize);
+            long end = Math.min(length, start + chunkSize);
             byte[] buffer = new byte[(int) (end - start)];
             long readBufferSize = inputStream.read(buffer);
             if (readBufferSize > 0) {
                 String chunkString = byteArrayToString(buffer);
-                uploadThreads.add(new UploadThread(contract, fileName, chunkString, uploadToken, documentKey, ""+counter));
+                uploadThreads.add(new UploadThread(contract, fileName, chunkString, documentKey, chunkKeyPrefix, ""+counter));
 //                long startTime = System.currentTimeMillis();
-//                byte[] response = contract.submitTransaction("uploadDocumentChunk", fileName, chunkString, uploadToken, ""+counter);
+//                byte[] response = contract.submitTransaction("uploadDocumentChunk", fileName, chunkString, documentKey, chunkKeyPrefix, ""+counter);
 //                long endTime = System.currentTimeMillis();
 //                System.out.println(fileName + "_" + counter + " transaction response : " + new String(response, UTF_8) + " Duration " + (endTime-startTime));
             }
-            start += chunksize;
+            start += chunkSize;
             ++counter;
         }
-        System.out.println("Chunk Count " + counter + " chunkSize " + chunksize);
+        System.out.println("Chunk Count " + counter + " chunkSize " + chunkSize);
         for(UploadThread uploadThread : uploadThreads){
             uploadThread.start();
         }
@@ -224,7 +230,7 @@ public class UploadServiceImpl implements UploadService{
      * @throws TimeoutException
      * @throws ContractException
      */
-    private String uploadFileMetadataToTheBlockchain(String fileName, long chunkCount, String fileHash, String documentKey, Contract contract) throws InterruptedException, TimeoutException, ContractException {
+    private String uploadFileMetadataToTheBlockchain(String fileName, long chunkCount, String fileHash, String documentKey, String chunkKeyPrefix, Contract contract) throws InterruptedException, TimeoutException, ContractException {
         //validate input data
         if (fileName == null || "".equals(fileName)) {
             System.out.println("Invalid File Name");
@@ -240,7 +246,7 @@ public class UploadServiceImpl implements UploadService{
         }
 
         //Send metadata to the blockchain
-        byte[] response = contract.submitTransaction(NetworkConstants.UPLOAD_METADATA_FUNCTION_NAME, fileName, fileHash, documentKey, ""+chunkCount);
+        byte[] response = contract.submitTransaction(NetworkConstants.UPLOAD_METADATA_FUNCTION_NAME, fileName, fileHash, documentKey, chunkKeyPrefix, ""+chunkCount);
         if (response.length == 0) {
             return null;
         }

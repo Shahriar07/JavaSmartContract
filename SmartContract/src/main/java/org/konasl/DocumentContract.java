@@ -51,13 +51,15 @@ public class DocumentContract implements ContractInterface {
      * Upload the metadata for a new document
      *
      * @param {Context} ctx the transaction context
-     * @param {String}  fileName document name
-     * @param {String}  fileHash Sha-256 hash (hex data) of file data
-     * @param {int}     chunkCount Number of chunks of the file
+     * @param {String}  fileName, document name
+     * @param {String}  fileHash, Sha-256 hash (hex data) of file data
+     * @param {String}  documentKey, unique identifier of file data
+     * @param {String}  chunkKeyPrefix, Key format of every file chunk "fileName_docKey_chunkCount"
+     * @param {int}     chunkCount, Number of chunks of the file
      */
 
     @Transaction
-    public String uploadMetadata(DocumentHolderContext ctx, String fileName, String fileHash, String documentKey, int chunkCount) {
+    public String uploadMetadata(DocumentHolderContext ctx, String fileName, String fileHash, String documentKey, String chunkKeyPrefix, int chunkCount) {
 
         System.out.println(ctx);
         // Generate the token
@@ -70,14 +72,14 @@ public class DocumentContract implements ContractInterface {
             return null;
         }
         long tokenEnd = System.currentTimeMillis();
-        System.out.println("Generate Upload token : " + (tokenEnd - tokenStart));
+        System.out.println("Generate Upload token duration : " + (tokenEnd - tokenStart));
         // Generate the chunkKeyList
-        ArrayList<String> chunkKeyList = generateChunkKeyList(fileName, documentKey, chunkCount);
+//        ArrayList<String> chunkKeyList = generateChunkKeyList(fileName, documentKey, chunkCount);
 
         long chunkKeyEnd = System.currentTimeMillis();
         System.out.println("Generate chunk Key : " + (chunkKeyEnd - tokenEnd));
         // create an instance of the document
-        DocumentContainer document = DocumentContainer.createInstance(fileName, fileHash, documentKey, chunkCount, token, chunkKeyList);
+        DocumentContainer document = DocumentContainer.createInstance(fileName, fileHash, documentKey, chunkCount, token, chunkKeyPrefix);
 
         System.out.println(document);
         // Add the document to the list of all similar documents in the ledger
@@ -109,7 +111,7 @@ public class DocumentContract implements ContractInterface {
      * This token will be used later to identify the document
      *
      * @param fileName
-     * @param fileHash
+     * @param docKey
      * @param count
      * @return
      * @throws NoSuchAlgorithmException
@@ -130,12 +132,13 @@ public class DocumentContract implements ContractInterface {
      * @param {Context} ctx the transaction context
      * @param {String}  fileName Name of the document
      * @param {String} documentBytes hex string of the chunk bytes
-     * @param {String}  uploadToken token of document metadata
+     * @param {String}  chunkKeyPrefix chunk Key prefix
+     * @param {String}  docKey,  unique identifier of document
      * @param {Integer} chunk number of the document
      */
 
     @Transaction
-    public boolean uploadDocumentChunk(DocumentHolderContext ctx, String fileName, String documentBytes, String uploadToken, String docKey, int chunkNumber) {
+    public boolean uploadDocumentChunk(DocumentHolderContext ctx, String fileName, String documentBytes, String chunkKeyPrefix, String docKey, int chunkNumber) {
 
         // retrieves the document metadata
         long getMetadataStart = System.currentTimeMillis();
@@ -146,18 +149,9 @@ public class DocumentContract implements ContractInterface {
         }
         long getMetadataEnd = System.currentTimeMillis();
         System.out.println("Get document metadata : " + (getMetadataEnd - getMetadataStart));
-        String chunkKey;
-        // get the chunk key for the provided chunk number
-        try {
-            chunkKey = document.getChunkKeyList().get(chunkNumber);
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Error : " + e.getMessage());
-            return false;
-        }
-        if (chunkKey == null) {
-            return false;
-        }
+        // prepare the chunk key for the provided chunk number
+        String chunkKey = Utility.prepareChunkKey(chunkKeyPrefix, chunkNumber);
+
 
         // insert the chunk value to the state
         ctx.getStub().putState(chunkKey, hexStringToByteArray(documentBytes));
@@ -186,6 +180,31 @@ public class DocumentContract implements ContractInterface {
     }
 
     /**
+     * Retrieves the document hash
+     *
+     * @param {Context} ctx the transaction context
+     * @param {String}  document name
+     * @param {String}  document token
+     */
+    @Transaction
+    public String getDocumentHash(DocumentHolderContext ctx, String fileName, String docKey) {
+
+        String key = State.makeKey(new String[]{fileName, docKey});
+        System.out.println("LedgerKey " + key);
+
+        // retrieve the document metadata from the state
+        DocumentContainer document = ctx.documentList.getDocument(key);
+        if (document != null){
+            System.out.println("Document chunk count " + document.getChunkCount());
+            return document.getDocumentHash();
+        }
+
+        System.out.println("Document not found for filename " + fileName + " and docKey " + docKey);
+        return null;
+    }
+
+
+    /**
      * Retrieves the document metadata
      *
      * @param {Context} ctx the transaction context
@@ -205,7 +224,7 @@ public class DocumentContract implements ContractInterface {
             return document.getChunkCount();
         }
 
-        System.out.println("Document not found for filename " + fileName + " and token " + uploadToken);
+        System.out.println("Document not found for filename " + fileName + " and docKey " + docKey);
         return 0;
     }
 
@@ -213,12 +232,13 @@ public class DocumentContract implements ContractInterface {
      * Retrieves document chunk bytes
      * @param ctx
      * @param fileName
-     * @param uploadToken
+     * @param docKey
+     * @param chunkKeyPrefix
      * @param chunkNumber
      * @return
      */
     @Transaction
-    public String getDocumentChunk(DocumentHolderContext ctx, String fileName, String docKey, int chunkNumber) {
+    public String getDocumentChunk(DocumentHolderContext ctx, String fileName, String docKey, String chunkKeyPrefix, int chunkNumber) {
         long getChunkStart = System.currentTimeMillis();
         // retrieves the document metadata
         DocumentContainer document = getDocumentMetadata(ctx, fileName, docKey);
@@ -227,18 +247,9 @@ public class DocumentContract implements ContractInterface {
             return null;
         }
 
-        String chunkKey;
-        // get the chunk key for the provided chunk number
-        try {
-            chunkKey = document.getChunkKeyList().get(chunkNumber);
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Error : " + e.getMessage());
-            return null;
-        }
-        if (chunkKey == null) {
-            return null;
-        }
+        // prepare the chunk key for the provided chunk number
+        String chunkKey = Utility.prepareChunkKey(chunkKeyPrefix, chunkNumber);
+        if (chunkKey == null) return null;
 
         // get the chunk value from the state
         byte[] bytes = ctx.getStub().getState(chunkKey);
