@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Document Manager</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	<!-- Third party scripts -->
+	<script src="./js/third-party/jquery-3.3.1.min.js"></script>
+	<script src="./js/third-party/sha256.js"></script>
+	<script src="./js/third-party/aes-js.js"></script>
+	<script src="./js/third-party/aws-sdk-v2.409.0.min.js"></script>
+	<script src="./js/third-party/sjcl.js"></script>
+
+		<!-- Common utility scripts -->	
+		<script src="./js/kona/utility/crypto_utility.js"></script>
+		<script src="./js/kona/utility/mock-util.js"></script>
+		<script src="./js/kona/utility/utility.js"></script>
+
+		<script src="./js/access_controller/access_controller_configuration.js"></script>
+		<script src="./js/access_controller/param_obj_creator.js"></script>
+		<script src="./js/access_controller/server_communicator.js"></script>
+		
+
+	<!-- Protocol management scripts -->
+	<script src="./js/kona/protocol_manager.js"></script>
+
+	<link rel="stylesheet" href="App.css">
+
+</head>
+<body>
+
+	<div id="content">
+		<div class="App">
+				<div class="App-header">		
+			<h3 class="field-long">Upload Document</h3>
+			<label> Document Key </label>
+			<input type="text" id="docKey"></br>
+			<input type="file" id="file">
+			<input type="submit" id="upload-document" value="Upload" /></br>
+			<h3 class="field-long">Download Document</h3>
+					<label> Document Key </label>
+					<input type="text" id="download-docKey"></br>
+					<label> Document Name </label>
+					<input type="text" id="download-docName"></br>
+					<input type="submit" id="download-document" value="Download" /></br>
+			<h3 class="field-long">Verify Document</h3>
+					<label> Document Key </label>
+					<input type="text" id="verify-docKey"></br>		
+					<label> Document Name </label>
+					<input type="text" id="verify-docName"></br>
+					<label> Document Hash </label>
+					<input type="text" id="verify-docHash"></br>
+					<input type="submit" id="request-verify" value="Verify" />
+		</div>
+	</div>
+	</div>
+	
+	<!-- It is the footer of the layout page-->
+	<div id="footer">
+		<h4>© Copyright 2019, Document Upload and Download Manager</h4>
+	</div>
+	
+
+</body>
+</html>
