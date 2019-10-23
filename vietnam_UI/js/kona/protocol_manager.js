@@ -1,18 +1,10 @@
 /** Protocol manager initializes the upload and download protocol
  * it also controls the flow of document upload and download process
  *
- * Requires /resources/js/node/blockchain_config.js 
- *     the smart contract configuration informations to initialize the document container
- * Requires /resources/js/kona/common/crypto_utility.js
+ * Requires /js/kona/common/crypto_utility.js
  *     to perform cryptographic operations (AES enc/dec, hash generation)
- * Requires /resources/js/node/node_manager.js
- *     to perform blockchain related operations (sign message to send access controller, initiate transaction)
- * Requires /resources/js/access_controller/upload_document.js
- *     to perform upload related operations to the auxiliary server
- * Requires /resources/js/access_controller/download_document.js
- *     to perform download related operations to the auxiliary server
  *
- * @author H. M. Shahriar (h.m.shahriar@konasl.com), Atif Anowar, Rayhanul Masud
+ * @author H. M. Shahriar (h.m.shahriar@konasl.com)
  */
 
 "use strict";
@@ -30,30 +22,6 @@ function UploadDocumentInfo() {
 }
 
 
-/**
- * Initializes the default values for a download document
- * In different steps of download process the values will be updated
- */
-
-function DownloadDocumentInfo() {
-    this.downloadDocKey = "";
-    this.downloadDocHash = "";
-
-    this.Kc = "";
-    this.Ku = "";
-    this.hexKc = "";
-    this.hexKu = "";
-    this.Uint8Kc = [];
-    this.Uint8Ku = [];
-    this.downloadDocumentSignature = "";
-    this.downloadPaymentToken = "";
-    this.downloadUnlockToken = "";
-    this.Uint8PaymentToken = [];
-    this.Uint8UnlockToken = [];
-    this.totalFee = 0;
-    this.encryptedSession = "";
-    this.Uint8EncryptedSession = [];
-}
 /** 
  * Constructor of protocol manager
  * initialize the server communication module and 
@@ -214,8 +182,13 @@ ProtocolManager.prototype.verifyDocument = function() {
     // Get document Hash
     var docHash = document.getElementById("verify-docHash").value;
 
+	if(docName == null){alert("Input document name"); return;}
+	if(docKey == null) {alert("Input document key"); return;}
+	if(docHash == null) {alert("Input document hash"); return;}
+	
    var requestArray = this.paramObjCreator.createParamObj(docKey);
    requestArray[PARAM_FILE_NAME] =  docName;
+   requestArray[PARAM_FILE_HASH] =  docHash;
    
    verifyFromMockStorage(requestArray, docHash, function(result) {
        if (result !== null) {

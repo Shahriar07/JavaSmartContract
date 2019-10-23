@@ -15,6 +15,11 @@ var uploadDocumentAPI = "/api/document/upload";
 // Download APIs
 var downloadDocumentAPI = "/api/document/download";
 
+// Verify API
+var verifyDocumentAPI = "/api/document/verify";
+
+
+
 // Server constants
 const HTTP_OK = 200;
 const RESPONSE_SUCCESS = "0000";
@@ -23,3 +28,4 @@ const RESPONSE_SUCCESS = "0000";
 const PARAM_DOCUMENT = "document";
 const PARAM_DOC_KEY = "documentKey";
 const PARAM_FILE_NAME = "fileName";
+const PARAM_FILE_HASH = "documentHash";

@@ -80,9 +80,16 @@ function sendRequestToServer( requestArray, baseUrl, api, type, callback) {
 			if (isTypeCallback(callback))
 				callback({status : RESPONSE_SUCCESS, data : responseObject.data});
         } else {
-            window.console.log("Error in operation " + responseObject.responseMessage);
-			if (isTypeCallback(callback))
-				callback(null);
+			if(responseObject.data != null) {
+				window.console.log("Error in operation " + responseObject.responseMessage + " : " + responseObject.data );
+				if (isTypeCallback(callback))
+					callback({status : responseObject.responseCode, data : responseObject.data});
+			}
+			else {
+				window.console.log("Error in operation " + responseObject.responseMessage);
+				if (isTypeCallback(callback))
+					callback({status : responseObject.responseCode, data : responseObject.data});
+			}
         }
     };
 }

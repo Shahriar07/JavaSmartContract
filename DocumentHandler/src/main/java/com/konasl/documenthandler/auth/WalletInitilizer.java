@@ -10,7 +10,6 @@ import org.hyperledger.fabric.gateway.Wallet.Identity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
-import sun.nio.ch.Net;
 
 
 import java.io.IOException;
@@ -38,17 +37,14 @@ public class WalletInitilizer {
             Wallet wallet = Wallet.createFileSystemWallet(walletPath);
 
             // Location of credentials to be stored in the wallet
-//            Path credentialPath = Paths.get("..","customize-network", "crypto-config",
-//                    "peerOrganizations", "orgkona.konai.com", "users", "User1@orgkona.konai.com", "msp");
             Path credentialPath = Paths.get(networkConstants.getClientKeyPath());
-            Path certificatePem = credentialPath.resolve(Paths.get("signcerts",
-                    "User1@orgkona.konai.com-cert.pem"));
-            Path privateKey = credentialPath.resolve(Paths.get("keystore",
-                    networkConstants.getKeyFileName()));
+            Path certificatePem = credentialPath.resolve(Paths.get(networkConstants.getCertFilePath()));
+            Path privateKey = credentialPath.resolve(Paths.get(networkConstants.getKeyFilePath()));
+
 
             // Load credentials into wallet
-            String identityLabel = "User1@orgkona.konai.com";
-            Identity identity = Identity.createIdentity("OrgKonaMSP", Files.newBufferedReader(certificatePem), Files.newBufferedReader(privateKey));
+            String identityLabel = networkConstants.getIdentityLabel();
+            Identity identity = Identity.createIdentity(networkConstants.getMspId(), Files.newBufferedReader(certificatePem), Files.newBufferedReader(privateKey));
 
             wallet.put(identityLabel, identity);
             System.out.println("Wallet key file generated successfully");

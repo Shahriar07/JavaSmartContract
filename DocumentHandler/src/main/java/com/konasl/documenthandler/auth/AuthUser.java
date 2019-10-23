@@ -39,7 +39,7 @@ public class AuthUser {
             Path walletPath = Paths.get(networkConstants.getClientWalletPath());
             Wallet wallet = Wallet.createFileSystemWallet(walletPath);
 
-            String userName = "User1@orgkona.konai.com";
+            String userName = networkConstants.getIdentityLabel();
 
             Path connectionProfile = Paths.get(networkConstants.getNetworkConfPath());
 
@@ -50,8 +50,8 @@ public class AuthUser {
             Gateway gateway = builder.connect();
             if (gateway != null) {
                 // Access kona network
-                System.out.println("Use network channel: " + NetworkConstants.CHANNEL_NAME);
-                return gateway.getNetwork(NetworkConstants.CHANNEL_NAME);
+                System.out.println("Use network channel: " + networkConstants.getChannelName());
+                return gateway.getNetwork( networkConstants.getChannelName());
 
             } else {
                 System.out.println("Gateway generation failed ");

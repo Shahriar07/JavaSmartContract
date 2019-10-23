@@ -11,18 +11,20 @@ import org.springframework.context.annotation.Configuration;
  * @author H. M. Shahriar (h.m.shahriar@konasl.com)
  * @since 10/10/2019 15:16
  */
+
 @Configuration
 @EnableConfigurationProperties
 @ConfigurationProperties
 public class NetworkConstants {
 
-    public static final String CHANNEL_NAME = "konachannel";
+    @Value("${com.konasl.documenthandler.channelname}")
+    private String CHANNEL_NAME;
+    public String getChannelName() {return CHANNEL_NAME;}
+
     // Chain code name in install instruction
     public static final String CHAIN_CODE_NAME = "documenthandler";
     // Chain code name in contract
     public static final String CHAIN_CODE_CONTRACT_NAME = "org.konasl.documentcontainer";
-    public static final String DOWNLOAD_EVENT_NAME = "GetDocument";
-    public static final String UPLOAD_EVENT_NAME = "AddDocument";
 
     // contract method name
     public static final String UPLOAD_METADATA_FUNCTION_NAME = "uploadMetadata";
@@ -64,7 +66,25 @@ public class NetworkConstants {
 //    public static final String KEY_FILE_NAME = "a958af32f7cca0ebb1bc9e49450d49ad8d05580531c9939d72471a93562c8e1a_sk";
     @Value("${com.konasl.documenthandler.client_key}")
     private String KEY_FILE_NAME;
-    public String getKeyFileName() {
+    public String getKeyFilePath() {
         return KEY_FILE_NAME;
+    }
+
+    @Value("${com.konasl.documenthandler.cert_file_path}")
+    private String CERT_FILE_NAME;
+    public String getCertFilePath() {
+        return CERT_FILE_NAME;
+    }
+
+    @Value("${com.konasl.documenthandler.mspid}")
+    private String MSPID;
+    public String getMspId() {
+        return MSPID;
+    }
+
+    @Value("${com.konasl.documenthandler.identityLabel}")
+    private String IDENTITY_LABEL;
+    public String getIdentityLabel() {
+        return IDENTITY_LABEL;
     }
 }

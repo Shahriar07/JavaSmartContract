@@ -31,25 +31,16 @@ function downloadFromMockStorage(requestArray, fileName, callback) {
 }
 
 
-
 function verifyFromMockStorage(requestArray, docHash, callback) {
-	console.log("downloadDocumentAPI ::"+ downloadDocumentAPI + " Request Array " + requestArray);
+	console.log("downloadDocumentAPI ::"+ verifyDocumentAPI + " Request Array " + requestArray);
 
-   sendRequestToServerForFileDownload(requestArray, serverBaseUrl, downloadDocumentAPI,"GET", function (response) {
+   sendRequestToServerForFileDownload(requestArray, serverBaseUrl, verifyDocumentAPI, "POST", function (response) {
 	   if (response === null || response === "undefined") {
 			   window.console.error("downloadFromMockStorage Error in response");
 		   return;
 	   } else {
-		    generateHash(response.data, function(generatedHash) {
-		   	if (generatedHash == docHash) {
-		   	  window.console.log("Document verification success");
-		   	  callback(true);
-		   	} else {
-		   	  window.console.error("Document verification failed");
-		   	  callback(false);
-		   	}
-			   
-		    }) ;
+				window.console.log("Document verification success" + response);
+		   return;
 	   }
    });
 }
