@@ -7,9 +7,6 @@ class DocumentHolderContext extends Context {
 
     public DocumentHolderContext(ChaincodeStub stub) {
         super(stub);
-        this.documentList = new DocumentList(this);
     }
-
-    public DocumentList documentList;
 
 }

@@ -90,12 +90,8 @@ public class UploadServiceImpl implements UploadService{
             // Insert document to fabric network
             System.out.println("Submit upload document transaction.");
             RestResponse uploadResponse = uploadFileInChunks(file, networkConstants.getFileChunkSize(), contract, documentKey); // file, maxchunk size in bytes, contract
-            System.out.println("Total number of chunks : " + uploadResponse.getData());
 
-            if (ResponseCodeEnum.SUCCESS.getCode().equals(uploadResponse.getResponseCode())) {
-                // Process response
-                System.out.println("Total number of chunks : " + uploadResponse.getData());
-            } else {
+            if (!ResponseCodeEnum.SUCCESS.getCode().equals(uploadResponse.getResponseCode())) {
                 System.out.println("Upload failed : " + uploadResponse.getResponseMessage());
             }
 
@@ -194,7 +190,7 @@ public class UploadServiceImpl implements UploadService{
                 String chunkString = byteArrayToString(buffer);
                 uploadThreads.add(new UploadThread(contract, fileName, chunkString, documentKey, chunkKeyPrefix, ""+counter));
 //                long startTime = System.currentTimeMillis();
-//                byte[] response = contract.submitTransaction("uploadDocumentChunk", fileName, chunkString, documentKey, chunkKeyPrefix, ""+counter);
+//                byte[] response = contract.submitTransaction(NetworkConstants.UPLOAD_DOC_CHUNK_FUNCTION_NAME, fileName, chunkString, chunkKeyPrefix, documentKey, ""+counter);
 //                long endTime = System.currentTimeMillis();
 //                System.out.println(fileName + "_" + counter + " transaction response : " + new String(response, UTF_8) + " Duration " + (endTime-startTime));
             }
@@ -212,7 +208,7 @@ public class UploadServiceImpl implements UploadService{
         }
         resetFinished();
         long endTime = System.currentTimeMillis();
-        System.out.println(" Duration " + (endTime-allStartTime));
+        System.out.println(" Upload Duration " + (endTime-allStartTime) + " for chunks : " + counter);
         inputStream.close();
         return new RestResponse(ResponseCodeEnum.SUCCESS, new UploadResponse(counter, fileHash));
     }

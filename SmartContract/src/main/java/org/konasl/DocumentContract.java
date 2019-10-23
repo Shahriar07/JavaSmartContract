@@ -6,6 +6,7 @@ import org.hyperledger.fabric.contract.ContractInterface;
 import org.hyperledger.fabric.contract.annotation.*;
 import org.hyperledger.fabric.shim.ChaincodeStub;
 import org.konasl.ledgerapi.State;
+import org.konasl.ledgerapi.impl.DocumentStateListImpl;
 import org.konasl.util.Utility;
 
 import java.security.NoSuchAlgorithmException;
@@ -84,7 +85,8 @@ public class DocumentContract implements ContractInterface {
         System.out.println(document);
         // Add the document to the list of all similar documents in the ledger
         // world state
-        ctx.documentList.addDocument(document);
+        DocumentStateListImpl stateOperator = new DocumentStateListImpl(ctx, documentKey, DocumentContainer::deserialize );
+        stateOperator.addState(document);
         long addDocumentEnd = System.currentTimeMillis();
         System.out.println("Store document metadata : " + (addDocumentEnd - chunkKeyEnd));
         // Return a serialized document container to the caller of smart contract
@@ -175,7 +177,8 @@ public class DocumentContract implements ContractInterface {
         System.out.println("LedgerKey " + key);
 
         // retrieve the document metadata from the state
-        DocumentContainer document = ctx.documentList.getDocument(key);
+        DocumentStateListImpl stateOperator = new DocumentStateListImpl(ctx, docKey, DocumentContainer::deserialize );
+        DocumentContainer document = (DocumentContainer) stateOperator.getState(key);
         return document;
     }
 
@@ -193,7 +196,8 @@ public class DocumentContract implements ContractInterface {
         System.out.println("LedgerKey " + key);
 
         // retrieve the document metadata from the state
-        DocumentContainer document = ctx.documentList.getDocument(key);
+        DocumentStateListImpl stateOperator = new DocumentStateListImpl(ctx, docKey, DocumentContainer::deserialize );
+        DocumentContainer document = (DocumentContainer) stateOperator.getState(key);
         if (document != null){
             System.out.println("Document chunk count " + document.getChunkCount());
             return document.getDocumentHash();
@@ -218,7 +222,8 @@ public class DocumentContract implements ContractInterface {
         System.out.println("LedgerKey " + key);
 
         // retrieve the document metadata from the state
-        DocumentContainer document = ctx.documentList.getDocument(key);
+        DocumentStateListImpl stateOperator = new DocumentStateListImpl(ctx, docKey, DocumentContainer::deserialize );
+        DocumentContainer document = (DocumentContainer) stateOperator.getState(key);
         if (document != null){
             System.out.println("Document chunk count " + document.getChunkCount());
             return document.getChunkCount();

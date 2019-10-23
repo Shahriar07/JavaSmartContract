@@ -35,7 +35,8 @@ public class DocumentStateListImpl implements DocumentStateList {
      */
     public DocumentStateListImpl(Context ctx, String listName, StateDeserializer deserializer) {
         this.ctx = ctx;
-        this.name = listName;
+//        this.name = listName;
+        this.name = "documentHolder";
         this.deserializer = deserializer;
 
     }

@@ -97,7 +97,7 @@ ProtocolManager.prototype.uploadDocument = function(_file) {
 
         that.sendDocumentToServer(_file, docKey, function(result) {
             if (result !== null) {
-                window.console.log("Upload response " + result);
+                window.console.log("Upload response " + result.status + " Message " + result.data );
             } else {
                 window.console.log("Error in operation sendDocumentToServer");
             }
