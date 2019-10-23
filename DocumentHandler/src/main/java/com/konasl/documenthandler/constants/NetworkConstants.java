@@ -35,15 +35,26 @@ public class NetworkConstants {
     @Value("${com.konasl.documenthandler.upload_chunk_size}")
     private int FILE_CHUNK_SIZE;
     public int getFileChunkSize() {
-        System.out.println("Chunk Size " + FILE_CHUNK_SIZE);
         return FILE_CHUNK_SIZE;
     }
 
-    // Takes almost 6 seconds to upload 5k data to 1 peer and 1 orderer
-//    public static final int FILE_CHUNK_SIZE = 5120;                     // File Chunk Size to split a large file
-    // Takes almost 20 seconds to upload 10k data to 1 peer and 1 orderer
-//    public static final int FILE_CHUNK_SIZE = 10240;                     // File Chunk Size to split a large file
+    @Value("${com.konasl.documenthandler.client_key_path}")
+    private String CLIENT_KEY_PATH;
+    public String getClientKeyPath() {
+        return CLIENT_KEY_PATH;
+    }
 
+    @Value("${com.konasl.documenthandler.client_wallet_path}")
+    private String CLIENT_WALLET_PATH;
+    public String getClientWalletPath() {
+        return CLIENT_WALLET_PATH;
+    }
+
+    @Value("${com.konasl.documenthandler.network_conf_path}")
+    private String NETWORK_CONF_PATH;
+    public String getNetworkConfPath() {
+        return NETWORK_CONF_PATH;
+    }
 
     public static final int EVENT_LISTENER_TIME = 600;                  // Waiting time to wait for an event
     public static final int THREAD_SLEEP_TIME_FOR_EVENT = 1000;         // In milliseconds
@@ -53,7 +64,6 @@ public class NetworkConstants {
 //    public static final String KEY_FILE_NAME = "a958af32f7cca0ebb1bc9e49450d49ad8d05580531c9939d72471a93562c8e1a_sk";
     @Value("${com.konasl.documenthandler.client_key}")
     private String KEY_FILE_NAME;
-
     public String getKeyFileName() {
         return KEY_FILE_NAME;
     }

@@ -4,6 +4,7 @@ import com.konasl.documenthandler.constants.NetworkConstants;
 import org.hyperledger.fabric.gateway.Gateway;
 import org.hyperledger.fabric.gateway.Network;
 import org.hyperledger.fabric.gateway.Wallet;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -20,6 +21,9 @@ import java.nio.file.Paths;
 @Service
 public class AuthUser {
 
+    @Autowired
+    NetworkConstants networkConstants;
+
     /**
      * Prepare wallet user from the generated key
      * Using the network connection file connect with the hyperledger network
@@ -32,12 +36,12 @@ public class AuthUser {
 
         try {
             // A wallet stores a collection of identities
-            Path walletPath = Paths.get("..", "identity", "user", "shahriar", "wallet");
+            Path walletPath = Paths.get(networkConstants.getClientWalletPath());
             Wallet wallet = Wallet.createFileSystemWallet(walletPath);
 
             String userName = "User1@orgkona.konai.com";
 
-            Path connectionProfile = Paths.get("..", "gateway", "networkConnection.yaml");
+            Path connectionProfile = Paths.get(networkConstants.getNetworkConfPath());
 
             // Set connection options on the gateway builder
             builder.identity(wallet, userName).networkConfig(connectionProfile).discovery(false);

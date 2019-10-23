@@ -15,7 +15,7 @@ services:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
       - FABRIC_CA_SERVER_CA_NAME=ca.konai.com
       - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.orgkona.konai.com-cert.pem
-      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/4239aa0dcd76daeeb8ba0cda701851d14504d31aad1b2ddddbac6a57365e497c_sk
+      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/02391aa8c07eeea50c42b07d039d89b3d8d47ed2ccb38b5fc6d4bb3dab04f37c_sk
     ports:
       - "7054:7054"
     command: sh -c 'fabric-ca-server start -b admin:adminpw'
@@ -43,7 +43,7 @@ services:
         - ./config/:/etc/hyperledger/configtx
         - ./crypto-config/ordererOrganizations/konai.com/orderers/konaorderer.konai.com/:/etc/hyperledger/msp/orderer
         - ./crypto-config/peerOrganizations/orgkona.konai.com/peers/kslpeer1.orgkona.konai.com/:/etc/hyperledger/msp/peerOrgKona
-        - ./../VetnamDocumentContract/contract-java:/etc/hyperledger/contracts
+        - ../SmartContract:/etc/hyperledger/contracts
     networks:
       - basic
 
@@ -80,7 +80,7 @@ services:
         - ./crypto-config/peerOrganizations/orgkona.konai.com/peers/kslpeer1.orgkona.konai.com/msp:/etc/hyperledger/msp/peer
         - ./crypto-config/peerOrganizations/orgkona.konai.com/users:/etc/hyperledger/msp/users
         - ./config:/etc/hyperledger/configtx
-        - ./../VetnamDocumentContract/contract-java:/etc/hyperledger/contracts
+        - ../SmartContract:/etc/hyperledger/contracts
     depends_on:
       - konaorderer.konai.com
       - couchdb
@@ -119,7 +119,7 @@ services:
         - /var/run/:/host/var/run/
         - ./../chaincode/:/opt/gopath/src/github.com/
         - ./crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
-        - ./../VetnamDocumentContract/contract-java:/etc/hyperledger/contracts
+        - ../SmartContract:/etc/hyperledger/contracts
     networks:
         - basic
     #depends_on:

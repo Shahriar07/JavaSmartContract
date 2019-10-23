@@ -34,12 +34,13 @@ public class WalletInitilizer {
         System.out.println("User wallet initialization started");
         try {
             // A wallet stores a collection of identities
-            Path walletPath = Paths.get("..","identity", "user", "shahriar", "wallet");
+            Path walletPath = Paths.get(networkConstants.getClientWalletPath());
             Wallet wallet = Wallet.createFileSystemWallet(walletPath);
 
             // Location of credentials to be stored in the wallet
-            Path credentialPath = Paths.get("..","crypto-config",
-                    "peerOrganizations", "orgkona.konai.com", "users", "User1@orgkona.konai.com", "msp");
+//            Path credentialPath = Paths.get("..","customize-network", "crypto-config",
+//                    "peerOrganizations", "orgkona.konai.com", "users", "User1@orgkona.konai.com", "msp");
+            Path credentialPath = Paths.get(networkConstants.getClientKeyPath());
             Path certificatePem = credentialPath.resolve(Paths.get("signcerts",
                     "User1@orgkona.konai.com-cert.pem"));
             Path privateKey = credentialPath.resolve(Paths.get("keystore",
