@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeoutException;
 
 import static com.konasl.documenthandler.util.Utility.byteArrayToString;
@@ -108,7 +110,7 @@ public class UploadServiceImpl implements UploadService{
     /**
      * Upload thread, to upload the document chunks to the blockchain network
      */
-    class UploadThread extends Thread {
+    class UploadThread implements Runnable {
         Contract contract;
         String fileName;
         String chunkString;
@@ -179,16 +181,20 @@ public class UploadServiceImpl implements UploadService{
             return new RestResponse(ResponseCodeEnum.FAILURE, ResponseCodeEnum.DOCUMENT_DATA_VERIFICATION_FAILED);
         }
 
+        ExecutorService executor = Executors.newFixedThreadPool(networkConstants.getMaxThreadCount());
         long start = 0;
         long counter = 0;
-        ArrayList<UploadThread> uploadThreads = new ArrayList<>();// = new UploadThread(contract, fileName, chunkString, uploadToken, ""+counter);
         while (start < length) {
             long end = Math.min(length, start + chunkSize);
             byte[] buffer = new byte[(int) (end - start)];
             long readBufferSize = inputStream.read(buffer);
             if (readBufferSize > 0) {
                 String chunkString = byteArrayToString(buffer);
-                uploadThreads.add(new UploadThread(contract, fileName, chunkString, documentKey, chunkKeyPrefix, ""+counter));
+
+                // parallel execution to upload document
+                executor.execute(new UploadThread(contract, fileName, chunkString, documentKey, chunkKeyPrefix, ""+counter));
+
+                // Serial execution to upload document
 //                long startTime = System.currentTimeMillis();
 //                byte[] response = contract.submitTransaction(NetworkConstants.UPLOAD_DOC_CHUNK_FUNCTION_NAME, fileName, chunkString, chunkKeyPrefix, documentKey, ""+counter);
 //                long endTime = System.currentTimeMillis();
@@ -198,12 +204,10 @@ public class UploadServiceImpl implements UploadService{
             ++counter;
         }
         System.out.println("Chunk Count " + counter + " chunkSize " + chunkSize);
-        for(UploadThread uploadThread : uploadThreads){
-            uploadThread.start();
-        }
         System.out.println("Thread started  " + (System.currentTimeMillis() - allStartTime));
-        while (true) {
-            if (getFinishedUploadTask() == counter) break;
+        executor.shutdown();
+        while (!executor.isTerminated()) {
+            //if (getFinishedUploadTask() == counter) break;
             //System.out.println("Counter " + counter + " Finished " + finishedUploadTask);
         }
         resetFinished();

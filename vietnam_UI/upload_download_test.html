@@ -2,7 +2,7 @@
 <html>
 
 <head>
-	<title>Document Manager</title>
+	<title>Document Management System</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	
@@ -26,40 +26,120 @@
 	<!-- Protocol management scripts -->
 	<script src="./js/kona/protocol_manager.js"></script>
 
-	<link rel="stylesheet" href="App.css">
+	<link rel="stylesheet" href="./css/app.css">
+	<link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
 
 </head>
 <body>
 
 	<div id="content">
-		<div class="App">
-				<div class="App-header">		
-			<h3 class="field-long">Upload Document</h3>
-			<label> Document Key </label>
-			<input type="text" id="docKey"></br>
-			<input type="file" id="file">
-			<input type="submit" id="upload-document" value="Upload" /></br>
-			<h3 class="field-long">Download Document</h3>
-					<label> Document Key </label>
-					<input type="text" id="download-docKey"></br>
-					<label> Document Name </label>
-					<input type="text" id="download-docName"></br>
-					<input type="submit" id="download-document" value="Download" /></br>
-			<h3 class="field-long">Verify Document</h3>
-					<label> Document Key </label>
-					<input type="text" id="verify-docKey"></br>		
-					<label> Document Name </label>
-					<input type="text" id="verify-docName"></br>
-					<label> Document Hash </label>
-					<input type="text" id="verify-docHash"></br>
-					<input type="submit" id="request-verify" value="Verify" />
+		<div class="topnav">
+			<label class="topnav-lbl">Document Management System</label>
 		</div>
-	</div>
-	</div>
+		<div class="container">
+			<div class="container-header">
+				<h3> Dashboard </h3>
+			</div>
+			<div class="row">
+				<div class="column" >
+					<div class="column-header upload-bg">
+						<table class="column-header-table">
+							<tr>
+								<td>
+									<label  class="column-header-top-text"> Upload </label>
+								</td>
+								<td rowspan="2" style="vertical-align : middle; text-align:center; align=center;">
+									<img class="column-header-image" src="./resources/img_upload.png"/>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<label class="column-header-bottom-text"> Upload Document </label>
+								</td>
+
+							</tr>
+						</table>
+					</div>
+					
+					<div class="column-body">
+						<label class="column-input-text"> Document Key </label></br>
+						<input type="text" id="docKey" placeholder="Enter document key"></br>
+						<label class="column-input-text"> Attachment </label></br>
+						
+						<label class="custom-file-upload" id="upload-document-name"> Document
+							<input type="file" id="file">
+						</label>
+						<button class="custom-file-upload-button">Browse</button>						
+						<input type="submit" id="upload-document" value="Upload" /></br>
+					</div>
+				</div>
+				
+				<div class="column">
+					<div class="column-header download-bg">
+						<table class="column-header-table">
+							<tr>
+								<td>
+									<label class="column-header-top-text"> Download </label>
+								</td>
+								<td rowspan="2" style="vertical-align : middle; text-align:center; align=center;">
+									<img class="column-header-image" src="./resources/img_download.png"/>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<label class="column-header-bottom-text"> Download Document </label>
+								</td>
+
+							</tr>
+						</table>
+					</div>
+					<div class="column-body">
+						<label class="column-input-text"> Document Key </label></br>
+						<input type="text" id="download-docKey"  placeholder="Enter document key"></br>
+						<label class="column-input-text"> Document Name </label></br>
+						<input type="text" id="download-docName"  placeholder="Enter document name"></br>
+						<input type="submit" style="background-color:#ff8d60" id="download-document" value="Download"/>
+					</div>
+				</div>
+
+				<div class="column">
+					<div class="column-header verify-bg">
+						<table class="column-header-table">
+							<tr>
+								<td>
+									<label class="column-header-top-text"> Verify </label>
+								</td>
+								<td rowspan="2" style="vertical-align : middle; text-align:center; align=center;">
+									<img class="column-header-image" src="./resources/img_verify.png"/>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<label class="column-header-bottom-text"> Verify Document </label>
+								</td>
+
+							</tr>
+						</table>
+					</div>
+					<div class="column-body">
+						<label class="column-input-text"> Document Key </label></br>
+						<input type="text" id="verify-docKey" placeholder="Enter document key"></br>		
+						<label class="column-input-text"> Document Hash </label></br>
+						<input type="text" id="verify-docHash"  placeholder="Enter document hash"></br>
+						<input type="submit" style="background-color:#0cc27e" id="request-verify" value="Verify" />
+					</div>
+				</div>
+			</div>
+		</div>
 	
-	<!-- It is the footer of the layout page-->
-	<div id="footer">
-		<h4>© Copyright 2019, Document Upload and Download Manager</h4>
+	
+		<!-- It is the footer of the layout page-->
+		<div class="footer">
+			<label>Copyright ©</label>
+			<label class="footer-company"> KONA </label>
+			<label> All rights reserved</label>
+		</div>
+	
 	</div>
 	
 

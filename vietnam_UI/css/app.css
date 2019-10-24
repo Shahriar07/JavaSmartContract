@@ -1,0 +1,183 @@
+* {
+  box-sizing: border-box;
+  font-family: 'Roboto', sans-serif;
+}
+
+body {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  background-color: #f5f7fa;
+}
+
+.topnav {
+  background-color: #ee2d4c;
+  height:70px;
+  display:flex;
+  align-items:center;
+  justify-content:center;  
+}
+.topnav-lbl {
+	text-align: center;
+    color: #f2f2f2;
+	margin:0;
+	font-size:30px;
+}
+
+/* Style the content */
+.container {
+  margin: 20px;
+}
+
+.container-header {
+  color: #121212;
+  padding:10px;
+}
+
+/* Create three equal columns that floats next to each other */
+.column {
+  float: left;
+  width: 33.33%;
+  padding: 10px 15px 20px 10px;
+  height: 400px; /* Should be removed. Only for demonstration */
+}
+
+.column-header  {
+	height: 80px;
+	border-radius: 5px;
+}
+
+.column-body  {
+	height: 300px;
+	border-radius: 5px;
+	background-color: #ffffff;
+	margin-top:15px;
+	padding:20px;
+}
+
+.column-input-text {
+	font-size:15px;
+	font-weight: bold;
+	margin-bottom:15px;
+}
+
+.upload-bg {
+	background-color: #ff586b;
+}
+.download-bg {
+	background-color: #ff8d60;
+}
+.verify-bg {
+	background-color: #0cc27e;
+}
+
+.column-header-image {
+	height: 40px;
+	width: 40px;
+}
+
+.column-header-table {
+	height: 100%;
+	width: 100%;
+	margin-left:10px;
+}
+
+.column-header-top-text {
+	vertical-align : sub;
+	color: #ffffff;
+		padding-left:15px;
+}
+.column-header-bottom-text {
+	vertical-align : sub;
+	color: #ffffff;
+	font-size: 15px;
+	padding-left:15px;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+input[type=text], select {
+  width: 60%;
+  padding: 12px 20px;
+  margin: 14px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+input[type=file] {
+  display: none;
+}
+
+.custom-file-upload {
+  width: 60%;
+  padding: 12px 20px;
+  margin: 14px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 13px;
+  cursor: pointer;
+  color:#737373;
+}
+
+.custom-file-upload-button {
+  width: 32%;
+  padding: 12px 20px;
+  margin: 10px 0px 0px 20px;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 15px;
+  color:#ffffff;
+  background-color: #ff586b;
+}
+
+.custom-file-upload-button:hover {
+	background-color: #ee2d4c;
+}
+
+input[type=submit] {
+  width: 35%;
+  background-color: #ff586b;
+  color: white;
+  padding: 14px 20px;
+  margin: 20px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  float: left;
+}
+
+input[type=submit]:hover {
+  background-color: #ee2d4c;
+}
+
+/* Style the footer */
+.footer {
+	width: 400px;
+	margin: auto;
+	padding: 10px;
+	text-align: center;
+	font-size: 16px;
+}
+/* Style the footer */
+.footer-company {
+  color: #ee2d4c;
+  text-align: center;
+}
+
+
+/* Responsive layout - makes the three columns stack on top of each other instead of next to each other */
+@media (max-width: 600px) {
+  .column {
+    width: 100%;
+  }
+}

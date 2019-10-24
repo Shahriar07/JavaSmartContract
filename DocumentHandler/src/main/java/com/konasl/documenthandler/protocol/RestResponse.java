@@ -6,6 +6,8 @@ package com.konasl.documenthandler.protocol;
  * @author H. M. Shahriar
  */
 
+@Data
+
 public class RestResponse {
 
     private String responseCode;

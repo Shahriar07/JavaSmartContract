@@ -87,4 +87,10 @@ public class NetworkConstants {
     public String getIdentityLabel() {
         return IDENTITY_LABEL;
     }
+
+    @Value("${com.konasl.documenthandler.max_thread}")
+    private int MAX_THREAD_COUNT;
+    public int getMaxThreadCount() {
+        return MAX_THREAD_COUNT;
+    }
 }
