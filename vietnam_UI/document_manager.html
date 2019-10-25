@@ -27,18 +27,29 @@
 	<script src="./js/kona/protocol_manager.js"></script>
 
 	<link rel="stylesheet" href="./css/app.css">
-	<link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+	<!--link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet"-->
 
 </head>
 <body>
 
 	<div id="content">
 		<div class="topnav">
-			<label class="topnav-lbl">Document Management System</label>
+			<div class="topnav-column0">
+				&nbsp;
+			</div>	
+			<div class="topnav-column1">
+				<label class="topnav-lbl">Document Management System</label>
+			</div>	
+			<div class="topnav-column2">
+				<button id="home-btn" class="topnav-btn"><img class="topnav-image" src="./resources/img_home.png"/></button>
+				<div> &nbsp; &nbsp;</div>
+				<button id="explorer-btn"  class="topnav-btn"><img class="topnav-image" src="./resources/img_explorer.png"/></button>
+			</div>
+			
 		</div>
 		<div class="container">
 			<div class="container-header">
-				<h3> Dashboard </h3>
+				<label class="container-header-txt"> Dashboard </label>
 			</div>
 			<div class="row">
 				<div class="column" >
@@ -54,7 +65,7 @@
 							</tr>
 							<tr>
 								<td>
-									<label class="column-header-bottom-text"> Upload Document </label>
+									<label class="column-header-bottom-text"> <i>Upload Document</i> </label>
 								</td>
 
 							</tr>
@@ -64,12 +75,11 @@
 					<div class="column-body">
 						<label class="column-input-text"> Document Key </label></br>
 						<input type="text" id="docKey" placeholder="Enter document key"></br>
-						<label class="column-input-text"> Attachment </label></br>
-						
-						<label class="custom-file-upload" id="upload-document-name"> Document
+						<label class="column-input-text"> File </label></br>
+						<label class="custom-file-upload" id="upload-document-name"> Select document to upload
 							<input type="file" id="file">
 						</label>
-						<button class="custom-file-upload-button">Browse</button>						
+						<!--button class="custom-file-upload-button">Browse</button-->						
 						<input type="submit" id="upload-document" value="Upload" /></br>
 					</div>
 				</div>
@@ -87,7 +97,7 @@
 							</tr>
 							<tr>
 								<td>
-									<label class="column-header-bottom-text"> Download Document </label>
+									<label class="column-header-bottom-text"> <i>Download Document</i> </label>
 								</td>
 
 							</tr>
@@ -96,9 +106,9 @@
 					<div class="column-body">
 						<label class="column-input-text"> Document Key </label></br>
 						<input type="text" id="download-docKey"  placeholder="Enter document key"></br>
-						<label class="column-input-text"> Document Name </label></br>
+						<label class="column-input-text"> Name (optional)</label></br>
 						<input type="text" id="download-docName"  placeholder="Enter document name"></br>
-						<input type="submit" style="background-color:#ff8d60" id="download-document" value="Download"/>
+						<input type="submit" id="download-document" value="Download"/>
 					</div>
 				</div>
 
@@ -115,7 +125,7 @@
 							</tr>
 							<tr>
 								<td>
-									<label class="column-header-bottom-text"> Verify Document </label>
+									<label class="column-header-bottom-text"><i> Verify Document</i> </label>
 								</td>
 
 							</tr>
@@ -124,9 +134,11 @@
 					<div class="column-body">
 						<label class="column-input-text"> Document Key </label></br>
 						<input type="text" id="verify-docKey" placeholder="Enter document key"></br>		
-						<label class="column-input-text"> Document Hash </label></br>
-						<input type="text" id="verify-docHash"  placeholder="Enter document hash"></br>
-						<input type="submit" style="background-color:#0cc27e" id="request-verify" value="Verify" />
+						<label class="column-input-text"> File </label></br>
+						<label class="custom-file-upload" id="upload-document-name"> Select document to verify
+							<input type="file" id="file">
+						</label>
+						<input type="submit" id="request-verify" value="Verify" />
 					</div>
 				</div>
 			</div>

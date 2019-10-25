@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Document Management System</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	
+	<!-- Third party scripts -->
+	<script src="./js/third-party/jquery-3.3.1.min.js"></script>
+	<script src="./js/third-party/sha256.js"></script>
+	<script src="./js/third-party/aes-js.js"></script>
+	<script src="./js/third-party/aws-sdk-v2.409.0.min.js"></script>
+	<script src="./js/third-party/sjcl.js"></script>
+
+		<!-- Common utility scripts -->	
+		<script src="./js/kona/utility/crypto_utility.js"></script>
+		<script src="./js/kona/utility/mock-util.js"></script>
+		<script src="./js/kona/utility/utility.js"></script>
+
+		<script src="./js/access_controller/access_controller_configuration.js"></script>
+		<script src="./js/access_controller/param_obj_creator.js"></script>
+		<script src="./js/access_controller/server_communicator.js"></script>
+		
+
+	<!-- Protocol management scripts -->
+	<!--script src="./js/kona/protocol_manager.js"></script-->
+
+	<link rel="stylesheet" href="./css/app.css">
+
+</head>
+<body>
+
+	<div id="content">
+		<div class="topnav">
+			<div class="topnav-column0">
+				&nbsp;
+			</div>	
+			<div class="topnav-column1">
+				<label class="topnav-lbl">Document Management System</label>
+			</div>	
+			<div class="topnav-column2">
+				<button id="home-btn" class="topnav-btn"><img class="topnav-image" src="./resources/img_home.png"/></button>
+				<div> &nbsp; &nbsp;</div>
+				<button id="explorer-btn"  class="topnav-btn"><img class="topnav-image" src="./resources/img_explorer.png"/></button>
+			</div>
+			
+		</div>
+		<div class="container">
+			<div class="container-header">
+				<label class="container-header-txt"> Block Information </label>
+			</div>
+			<div class="block-search-container">
+				<label class="column-input-text"> Block Number </label></br>
+				<input type="text" class="block-search-input" id="search-block" placeholder="Enter block number">
+				<button id="search-block" class="block-search-input-btn">Search</button>
+			</div>
+			<div style="height:15px">&nbsp;</div>
+			
+			<div class="block-info-container">
+				<label class="column-input-text"> Block Number </label></br>
+			</div>
+		</div>
+	
+	
+		<!-- It is the footer of the layout page-->
+		<div class="footer">
+			<label>Copyright ©</label>
+			<label class="footer-company"> KONA </label>
+			<label> All rights reserved</label>
+		</div>
+	
+	</div>
+	
+
+</body>
+</html>

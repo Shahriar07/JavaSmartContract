@@ -37,31 +37,6 @@ public class UploadServiceImpl implements UploadService{
     @Autowired
     Utility utility;
 
-    private long finishedUploadTask = 0;
-    private final Object lock = new Object();
-
-    public void incrementFinished() {
-        synchronized (lock) {
-            finishedUploadTask++;
-            System.out.println("Finished " + finishedUploadTask);
-        }
-    }
-
-    public long resetFinished() {
-        synchronized (lock) {
-            long temp = finishedUploadTask;
-            finishedUploadTask = 0;
-            return temp;
-        }
-    }
-    public long getFinishedUploadTask() {
-        synchronized (lock) {
-            long temp = finishedUploadTask;
-            return temp;
-        }
-    }
-
-
     /**
      * Upload a document to the blockchain
      *
@@ -140,7 +115,6 @@ public class UploadServiceImpl implements UploadService{
             }
             long endTime = System.currentTimeMillis();
             System.out.println(fileName + "_" + counter + " transaction response : " + new String(response, UTF_8) + " Duration " + (endTime-startTime));
-            incrementFinished();
         }
 
     }
@@ -210,7 +184,6 @@ public class UploadServiceImpl implements UploadService{
             //if (getFinishedUploadTask() == counter) break;
             //System.out.println("Counter " + counter + " Finished " + finishedUploadTask);
         }
-        resetFinished();
         long endTime = System.currentTimeMillis();
         System.out.println(" Upload Duration " + (endTime-allStartTime) + " for chunks : " + counter);
         inputStream.close();

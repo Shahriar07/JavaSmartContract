@@ -228,6 +228,28 @@ ProtocolManager.prototype.bindButtons = function() {
     document.getElementById("request-verify").addEventListener("click", function() {
         that.verifyDocument();
     });
+	
+	document.getElementById("home-btn").addEventListener("click", function() {
+		console.log("home button clicked");
+		var fileName = location.href.split("/").slice(-1); 
+		console.log("home button clicked : " + fileName);
+		if(fileName != "document_manager.html"){
+			console.log("home button clicked before: " + fileName);
+			window.open("document_manager.html", "_top");
+			console.log("home button clicked after : " + fileName);
+		}
+    });
+
+	document.getElementById("explorer-btn").addEventListener("click", function() {
+		console.log("explorer button clicked");
+		var fileName = location.href.split("/").slice(-1); 
+		console.log("explorer button clicked : " + fileName);
+		if(fileName != "block_explorer.html"){
+			console.log("home button clicked before: " + fileName);
+			window.open("block_explorer.html", "_top");
+			console.log("home button clicked after : " + fileName);
+		}
+    });
 };
 
 ProtocolManager.prototype.onReady = function() {
