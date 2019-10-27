@@ -5,7 +5,7 @@
 	<title>Document Management System</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	
+
 	<!-- Third party scripts -->
 	<script src="./js/third-party/jquery-3.3.1.min.js"></script>
 	<script src="./js/third-party/sha256.js"></script>
@@ -13,15 +13,15 @@
 	<script src="./js/third-party/aws-sdk-v2.409.0.min.js"></script>
 	<script src="./js/third-party/sjcl.js"></script>
 
-		<!-- Common utility scripts -->	
-		<script src="./js/kona/utility/crypto_utility.js"></script>
-		<script src="./js/kona/utility/mock-util.js"></script>
-		<script src="./js/kona/utility/utility.js"></script>
+	<!-- Common utility scripts -->
+	<script src="./js/kona/utility/crypto_utility.js"></script>
+	<script src="./js/kona/utility/mock-util.js"></script>
+	<script src="./js/kona/utility/utility.js"></script>
 
-		<script src="./js/access_controller/access_controller_configuration.js"></script>
-		<script src="./js/access_controller/param_obj_creator.js"></script>
-		<script src="./js/access_controller/server_communicator.js"></script>
-		
+	<script src="./js/access_controller/access_controller_configuration.js"></script>
+	<script src="./js/access_controller/param_obj_creator.js"></script>
+	<script src="./js/access_controller/server_communicator.js"></script>
+
 
 	<!-- Protocol management scripts -->
 	<!--script src="./js/kona/protocol_manager.js"></script-->
@@ -29,6 +29,7 @@
 	<link rel="stylesheet" href="./css/app.css">
 
 </head>
+
 <body>
 
 	<div id="content">
@@ -38,10 +39,11 @@
 			</div>
 			<div class="topnav-column1">
 				<label class="topnav-lbl">Document Management System</label>
-			</div>	
+			</div>
 			<div class="topnav-column2">
-				<div class="topnav-column2-items"><a href="document_manager.html"><img class="topnav-image" src="./resources/img_home.png"/></a></div>
-				<div class="topnav-column2-items"><img class="topnav-image" src="./resources/img_explorer.png"/></div>
+				<div class="topnav-column2-items"><a href="document_manager.html"><img class="topnav-image"
+							src="./resources/img_home.png" /></a></div>
+				<div class="topnav-column2-items"><img class="topnav-image" src="./resources/img_explorer.png" /></div>
 			</div>
 			<div class="topnav-column3">
 				&nbsp;
@@ -58,22 +60,124 @@
 				<button id="search-block" class="block-search-input-btn">Search</button>
 			</div>
 			<div style="height:15px">&nbsp;</div>
-			
+
 			<div class="block-info-container">
-				<label class="column-input-text"> Block Number </label></br>
+				<label class="column-input-text"> Block Details </label></br>
+				<table class="block-info-container-table">
+					<tr>
+						<th class="block-info-container-th" style="width:20%; ">
+							Field
+						</th>
+						<th class="block-info-container-th" style="width:80%; ">
+							Value
+						</th>
+					</tr>
+					<tr>
+						<td class="block-info-container-td">
+							Channel Name
+						</td>
+						<td class="block-info-container-td" id="channel-name">
+							value
+						</td>
+					</tr>
+					<tr>
+						<td class="block-info-container-td">
+							Channel ID
+						</td>
+						<td class="block-info-container-td" id="channel-id">
+							value
+						</td>
+					</tr>
+					<tr>
+						<td class="block-info-container-td">
+							Last Block
+						</td>
+						<td class="block-info-container-td"  id="last-block">
+							value
+						</td>
+					</tr>
+					<tr>
+						<td class="block-info-container-td">
+							Block Number
+						</td>
+						<td class="block-info-container-td"  id="current-block">
+							value
+						</td>
+					</tr>
+					<tr>
+						<td class="block-info-container-td">
+							Block Hash
+						</td>
+						<td class="block-info-container-td" id="block-hash">
+							value
+						</td>
+					</tr>
+					
+					<tr>
+						<td class="block-info-container-td">
+							Transaction Count
+						</td>
+						<td class="block-info-container-td" id="transaction-count">
+							value
+						</td>
+					</tr>
+					<tr>
+						<td class="block-info-container-td">
+							Nonce
+						</td>
+						<td class="block-info-container-td"  id="nonce">
+							value
+						</td>
+					</tr>
+					<tr>
+						<td class="block-info-container-td">
+							Transaction Status
+						</td>
+						<td class="block-info-container-td" id="transaction-status">
+							value
+						</td>
+					</tr>
+					<tr>
+						<td class="block-info-container-td">
+							Endorsement Count
+						</td>
+						<td class="block-info-container-td" id="endorsement-count">
+							value
+						</td>
+					</tr>
+
+					<tr>
+						<td class="block-info-container-td">
+							Chaincode ID
+						</td>
+						<td class="block-info-container-td" id="chaincode-id">
+							value
+						</td>
+					</tr>
+
+					<tr>
+						<td class="block-info-container-td">
+							Time
+						</td>
+						<td class="block-info-container-td" id="time">
+							value
+						</td>
+					</tr>
+				</table>
 			</div>
 		</div>
-	
-	
+
+
 		<!-- It is the footer of the layout page-->
 		<div class="footer">
 			<label>Copyright ©</label>
 			<label class="footer-company"> KONA </label>
 			<label> All rights reserved</label>
 		</div>
-	
+
 	</div>
-	
+
 
 </body>
+
 </html>
