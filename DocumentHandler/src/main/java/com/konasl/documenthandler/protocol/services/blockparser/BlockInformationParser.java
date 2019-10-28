@@ -6,8 +6,9 @@ import com.konasl.documenthandler.protocol.apidata.BlockInfoContainer;
 import com.konasl.documenthandler.util.Utility;
 import org.apache.commons.codec.binary.Hex;
 import org.hyperledger.fabric.gateway.Network;
-import org.hyperledger.fabric.protos.ledger.rwset.kvrwset.KvRwset;
-import org.hyperledger.fabric.sdk.*;
+import org.hyperledger.fabric.sdk.BlockInfo;
+import org.hyperledger.fabric.sdk.BlockchainInfo;
+import org.hyperledger.fabric.sdk.Channel;
 import org.hyperledger.fabric.sdk.exception.InvalidArgumentException;
 import org.hyperledger.fabric.sdk.exception.InvalidProtocolBufferRuntimeException;
 import org.hyperledger.fabric.sdk.exception.ProposalException;
@@ -16,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hyperledger.fabric.sdk.BlockInfo.EnvelopeType.TRANSACTION_ENVELOPE;
 
 
@@ -68,7 +68,7 @@ public class BlockInformationParser {
      * @throws ProposalException
      * @throws IOException
      */
-    public BlockInfoContainer parseBlockInfo(Channel channel, long reqBlockNumber) throws InvalidArgumentException, ProposalException, IOException {
+    public BlockInfoContainer parseBlockInfo(Channel channel, long reqBlockNumber) throws Throwable {
         try {
             BlockInfoContainer blockInfoContainer = new BlockInfoContainer();
 
@@ -114,6 +114,8 @@ public class BlockInformationParser {
                 }
                 return blockInfoContainer;
         } catch (InvalidProtocolBufferRuntimeException e) {
+            throw e.getCause();
+        } catch (ProposalException e){
             throw e.getCause();
         }
     }

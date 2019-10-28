@@ -6,33 +6,33 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<!-- Third party scripts -->
 	<script src="./js/third-party/jquery-3.3.1.min.js"></script>
 	<script src="./js/third-party/sha256.js"></script>
 	<script src="./js/third-party/aes-js.js"></script>
 	<script src="./js/third-party/aws-sdk-v2.409.0.min.js"></script>
 	<script src="./js/third-party/sjcl.js"></script>
 
-	<!-- Common utility scripts -->
-	<script src="./js/kona/utility/crypto_utility.js"></script>
-	<script src="./js/kona/utility/mock-util.js"></script>
-	<script src="./js/kona/utility/utility.js"></script>
+		<!-- Common utility scripts -->	
+		<script src="./js/kona/utility/crypto_utility.js"></script>
+		<script src="./js/kona/utility/mock-util.js"></script>
+		<script src="./js/kona/utility/utility.js"></script>
 
-	<script src="./js/access_controller/access_controller_configuration.js"></script>
-	<script src="./js/access_controller/param_obj_creator.js"></script>
-	<script src="./js/access_controller/server_communicator.js"></script>
+		<script src="./js/access_controller/access_controller_configuration.js"></script>
+		<script src="./js/access_controller/param_obj_creator.js"></script>
+		<script src="./js/access_controller/server_communicator.js"></script>
 
 
 	<!-- Protocol management scripts -->
-	<!--script src="./js/kona/protocol_manager.js"></script-->
+	<script type="text/javascript" src="./js/kona/block_explorerjs.js"></script>
 
 	<link rel="stylesheet" href="./css/app.css">
+	<link rel="stylesheet" href="./css/next_previous.css">
 
 </head>
 
 <body>
 
-	<div id="content">
+	<div id="content">	
 		<div class="topnav">
 			<div class="topnav-column0">
 				&nbsp;
@@ -42,7 +42,7 @@
 			</div>
 			<div class="topnav-column2">
 				<div class="topnav-column2-items"><a href="document_manager.html"><img class="topnav-image"
-							src="./resources/img_home.png" /></a></div>
+							src="./resources/img_home.png"/></a></div>
 				<div class="topnav-column2-items"><img class="topnav-image" src="./resources/img_explorer.png" /></div>
 			</div>
 		</div>
@@ -53,19 +53,19 @@
 			</div>
 			<div class="block-search-container">
 				<label class="column-input-text"> Block Number </label></br>
-				<input type="text" class="block-search-input" id="search-block" placeholder="Enter block number">
-				<button id="search-block" class="block-search-input-btn">Search</button>
+				<input type="text" class="block-search-input" id="search-block-input" placeholder="Enter block number">
+				<button id="search-block-btn" class="block-search-input-btn">Search</button>
 			</div>
-			<div style="height:15px">&nbsp;</div>
+			<div style="height:10px">&nbsp;</div>
 
 			<div class="block-info-container">
 				<label class="column-input-text"> Block Details </label></br>
 				<table class="block-info-container-table">
 					<tr>
-						<th class="block-info-container-th" style="width:20%; ">
+						<th class="block-info-container-th" style="width:30%; ">
 							Field
 						</th>
-						<th class="block-info-container-th" style="width:80%; ">
+						<th class="block-info-container-th" style="width:70%; ">
 							Value
 						</th>
 					</tr>
@@ -158,6 +158,17 @@
 						</td>
 						<td class="block-info-container-td" id="time">
 							value
+						</td>
+					</tr>
+				</table>
+				<div> &nbsp</div>
+				<table class="pagination-table">
+					<tr>
+						<td>
+							<button id="previous-block-search" class="next-enable round">&laquo;</a>
+						</td>
+						<td>
+							<button id="next-block-search" class="next-enable round">&raquo;</a>
 						</td>
 					</tr>
 				</table>

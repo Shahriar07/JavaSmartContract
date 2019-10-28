@@ -1,0 +1,38 @@
+#previous-block-search, #next-block-search{
+  text-decoration: none;
+  display: inline-block;
+  padding: 8px 16px;
+}
+
+#previous-block-search:hover  {
+  background-color: #ee2d4c;
+}
+#next-block-search:hover {
+  background-color: #ee2d4c;
+}
+.next-disable {
+  background-color: #f1f1f1;
+  color: black;
+  border: 0px;
+}
+
+.next-enable {
+  background-color: #ff586b;
+  color: white;
+  border: 0px;
+}
+
+.round {
+  border-radius: 10%;
+}
+
+.pagination-table {
+	width: 90px;
+	margin-left:50px;
+	padding-left:20px;
+}
+
+.pagination-table td {
+	width: 40px;
+	margin: 10px;
+}

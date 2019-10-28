@@ -11,6 +11,7 @@ function downloadFromMockStorage(requestArray, fileName, callback) {
 	sendRequestToServerForFileDownload(requestArray, serverBaseUrl, downloadDocumentAPI,"GET", function (response) {
 		if (response === null || response === "undefined") {
 				window.console.error("downloadFromMockStorage Error in response");
+				callback(null);
 		    return;
 		} else {
 			window.console.log(response);

@@ -95,8 +95,10 @@ ProtocolManager.prototype.uploadDocument = function(_file) {
         that.sendDocumentToServer(_file, docKey, function(result) {
             if (result !== null) {
                 window.console.log("Upload response " + result.status + " Message " + result.data );
+				alert("Document Upload " + result.message);
             } else {
                 window.console.log("Error in operation sendDocumentToServer");
+				alert("Document Upload failed");
             }
         });
     };
@@ -157,6 +159,7 @@ ProtocolManager.prototype.downloadDocument = function() {
         if (result !== null) {
             window.console.log("download response " + result);
         } else {
+			alert("Document download failed");
             window.console.log("Error in operation download document");
         }
     });

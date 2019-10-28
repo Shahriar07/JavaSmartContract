@@ -1,9 +1,11 @@
 package com.konasl.documenthandler.protocol.services.download;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.konasl.documenthandler.auth.AuthUser;
 import com.konasl.documenthandler.constants.NetworkConstants;
 import com.konasl.documenthandler.protocol.ResponseCodeEnum;
 import com.konasl.documenthandler.protocol.RestResponse;
+import com.konasl.documenthandler.protocol.apidata.DocumentContainer;
 import com.konasl.documenthandler.util.Utility;
 import org.hyperledger.fabric.gateway.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,13 +55,18 @@ public class DownloadServiceImpl implements DownloadService
 
         // Get file metadata from contract
         // Get chunk of files
-            int chunkCount =  getChunkCountFromTheBlockChain(fileName, documentKey, contract);
-            if (chunkCount < 1) {
+            String documentInfo =  getChunkCountFromTheBlockChain(fileName, documentKey, contract);
+            if (documentInfo == null) {
+                System.out.println("Document metadata not found");
+                return new RestResponse(ResponseCodeEnum.DOCUMENT_NOT_EXIST);
+            }
+            DocumentContainer documentContainer = new ObjectMapper().readValue(documentInfo, DocumentContainer.class);
+            if (documentContainer == null || documentContainer.getChunkCount() < 1) {
                 return new RestResponse(ResponseCodeEnum.DOCUMENT_NOT_EXIST);
             }
             Path temporaryPath = Paths.get("..", "download");
         // prepare actual file
-           File file =  prepareFileFromChunks(temporaryPath,fileName, chunkCount, documentKey, contract);
+           File file =  prepareFileFromChunks(temporaryPath,documentContainer.getFileName(), documentContainer.getChunkCount(), documentKey, contract);
            if (file != null ) {
               // String generatedFileHash = Utility.prepareSha256HashofFile(file);
 
@@ -220,7 +227,7 @@ public class DownloadServiceImpl implements DownloadService
          * @throws TimeoutException
          * @throws ContractException
          */
-        private int getChunkCountFromTheBlockChain(String fileName, String documentKey, Contract contract) throws InterruptedException, TimeoutException, ContractException {
+        private String getChunkCountFromTheBlockChain(String fileName, String documentKey, Contract contract) throws InterruptedException, TimeoutException, ContractException {
             //validate input data
 //            if (fileName == null || "".equals(fileName)) {
 //                System.out.println("Invalid File Name");
@@ -228,20 +235,19 @@ public class DownloadServiceImpl implements DownloadService
 //            }
             if (documentKey == null || "".equals(documentKey)) {
                 System.out.println("Invalid File token");
-                return 0;
+                return null;
             }
             if (contract == null) {
                 System.out.println("Invalid contract ");
-                return 0;
+                return null;
             }
 
             //Get chunkCount from the blockchain
-            byte[] response = contract.submitTransaction(NetworkConstants.QUERY_CHUNK_COUNT_FUNCTION_NAME, fileName, documentKey);
+            byte[] response = contract.submitTransaction(NetworkConstants.QUERY_METADATA_FUNCTION_NAME, documentKey);
             if (response.length == 0) {
-                return 0;
+                return null;
             }
-            int chunkCount = Integer.parseInt(new String(response, UTF_8));
-            System.out.println("Chunk Count : " + chunkCount);
-            return chunkCount;
+            String documentInfo = new String(response, UTF_8);
+            return documentInfo;
         }
 }

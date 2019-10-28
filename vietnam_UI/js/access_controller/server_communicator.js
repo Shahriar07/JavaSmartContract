@@ -120,7 +120,8 @@ function sendRequestToServerForFileDownload( requestArray, baseUrl, api, type, c
     request.send(requestData);
     request.onload = function() {
         if (request.status != HTTP_OK) {
-            window.console.log("Server error " + request.status);
+			console.log("Download File :"+ JSON.stringify(request));
+			window.console.log("Server error message: " + request.response + " code: " + request.status);
 			if (isTypeCallback(callback))
 				callback(null);
             return;

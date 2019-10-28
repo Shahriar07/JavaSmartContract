@@ -18,6 +18,9 @@ var downloadDocumentAPI = "/api/document/download";
 // Verify API
 var verifyDocumentAPI = "/api/document/verify";
 
+// Block Query API
+var getBlockQueryAPI = "/api/explore/block";
+
 
 
 // Server constants
@@ -29,3 +32,5 @@ const PARAM_DOCUMENT = "document";
 const PARAM_DOC_KEY = "documentKey";
 const PARAM_FILE_NAME = "fileName";
 const PARAM_FILE_HASH = "documentHash";
+
+const PARAM_BLOCK_NUMBER = "blockNumber";
