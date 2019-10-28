@@ -222,10 +222,10 @@ public class DownloadServiceImpl implements DownloadService
          */
         private int getChunkCountFromTheBlockChain(String fileName, String documentKey, Contract contract) throws InterruptedException, TimeoutException, ContractException {
             //validate input data
-            if (fileName == null || "".equals(fileName)) {
-                System.out.println("Invalid File Name");
-                return 0;
-            }
+//            if (fileName == null || "".equals(fileName)) {
+//                System.out.println("Invalid File Name");
+//                return 0;
+//            }
             if (documentKey == null || "".equals(documentKey)) {
                 System.out.println("Invalid File token");
                 return 0;
@@ -235,7 +235,7 @@ public class DownloadServiceImpl implements DownloadService
                 return 0;
             }
 
-            //Send metadata to the blockchain
+            //Get chunkCount from the blockchain
             byte[] response = contract.submitTransaction(NetworkConstants.QUERY_CHUNK_COUNT_FUNCTION_NAME, fileName, documentKey);
             if (response.length == 0) {
                 return 0;

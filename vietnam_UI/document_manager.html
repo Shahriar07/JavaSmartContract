@@ -44,9 +44,6 @@
 						<div class="topnav-column2-items"><img class="topnav-image" src="./resources/img_home.png"/></div>
 						<div class="topnav-column2-items"><a href="block_explorer.html"><img class="topnav-image" src="./resources/img_explorer.png"/></a></div>
 					</div>
-					<div class="topnav-column3">
-						&nbsp;
-					</div>
 			</div>
 
 		<div class="container">
@@ -54,6 +51,7 @@
 				<label class="container-header-txt"> Dashboard </label>
 			</div>
 			<div class="row">
+			<!-- Upload section started -->
 				<div class="column" >
 					<div class="column-header upload-bg">
 						<table class="column-header-table">
@@ -73,19 +71,18 @@
 							</tr>
 						</table>
 					</div>
-					
 					<div class="column-body">
 						<label class="column-input-text"> Document Key </label></br>
 						<input type="text" id="docKey" placeholder="Enter document key"></br>
 						<label class="column-input-text"> File </label></br>
-						<label class="custom-file-upload" id="upload-document-name"> Select document to upload
-							<input type="file" id="file">
-						</label>
-						<!--button class="custom-file-upload-button">Browse</button-->						
+						<input type="text" id="upload-document-name" placeholder="Select document to upload" readonly/>
+						<button class="custom-file-upload-button" id="custom-upload-btn">Browse</button>						
+						<input type="file" id="upload-file">
 						<input type="submit" id="upload-document" value="Upload" /></br>
 					</div>
 				</div>
 				
+				<!-- Download section started -->
 				<div class="column">
 					<div class="column-header download-bg">
 						<table class="column-header-table">
@@ -113,7 +110,8 @@
 						<input type="submit" id="download-document" value="Download"/>
 					</div>
 				</div>
-
+				
+				<!-- Verify section started -->
 				<div class="column">
 					<div class="column-header verify-bg">
 						<table class="column-header-table">
@@ -137,9 +135,9 @@
 						<label class="column-input-text"> Document Key </label></br>
 						<input type="text" id="verify-docKey" placeholder="Enter document key"></br>		
 						<label class="column-input-text"> File </label></br>
-						<label class="custom-file-upload" id="upload-document-name"> Select document to verify
-							<input type="file" id="file">
-						</label>
+						<input type="text" id="verify-document-name" placeholder="Select document to verify" readonly/>
+						<button class="custom-file-upload-button" id="custom-verify-btn">Browse</button>						
+						<input type="file" id="verify-file">
 						<input type="submit" id="request-verify" value="Verify" />
 					</div>
 				</div>

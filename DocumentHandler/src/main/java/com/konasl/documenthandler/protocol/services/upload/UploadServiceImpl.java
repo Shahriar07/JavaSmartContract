@@ -105,7 +105,7 @@ public class UploadServiceImpl implements UploadService{
             System.out.println("startTime : " + startTime + " chunk " + counter);
             byte[] response = new byte[0];
             try {
-                response = contract.submitTransaction(NetworkConstants.UPLOAD_DOC_CHUNK_FUNCTION_NAME, fileName, chunkString, chunkKeyPrefix, documentKey, ""+counter);
+                response = contract.submitTransaction(NetworkConstants.UPLOAD_DOC_CHUNK_FUNCTION_NAME, chunkString, chunkKeyPrefix, documentKey, ""+counter);
             } catch (ContractException e) {
                 e.printStackTrace();
             } catch (TimeoutException e) {

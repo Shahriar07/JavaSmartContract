@@ -12,13 +12,10 @@
 // Sets the default values of the uploading document information
 function UploadDocumentInfo() {
     this.files = [];
+	this.verifyFiles = [];
     this.docKey = "";
-    this.aesKey = "";
-    this.Uint8DocKey = [];
-    this.fileHash = "";
-    this.documentSignature = "";
-    this.hexAesKey = "";
-    this.Uint8InitialToken = [];
+    this.uploadFileHash = "";
+	this.verifyFileHash = "";
 }
 
 
@@ -150,7 +147,7 @@ ProtocolManager.prototype.downloadDocument = function() {
 
     // Get document Key
     var docKey = document.getElementById("download-docKey").value;
-    // Get document Key
+    // Get document name
     var docName = document.getElementById("download-docName").value;
 
 	var requestArray = this.paramObjCreator.createParamObj(docKey);
@@ -171,33 +168,41 @@ ProtocolManager.prototype.downloadDocument = function() {
  * This function will be called to get a payment token from access controller to initiate a document download.
  */
 
-ProtocolManager.prototype.verifyDocument = function() {
+ProtocolManager.prototype.verifyDocument = function(_file) {
     var that = this;
     window.console.log("In verifyDocument");
-
+    if (!this.validateFile(_file)) {
+        return;
+    }
    // Get document Key
    var docKey = document.getElementById("verify-docKey").value;
-   // Get document Key
-   var docName = document.getElementById("verify-docName").value;
-    // Get document Hash
-    var docHash = document.getElementById("verify-docHash").value;
-
-	if(docName == null){alert("Input document name"); return;}
-	if(docKey == null) {alert("Input document key"); return;}
-	if(docHash == null) {alert("Input document hash"); return;}
 	
-   var requestArray = this.paramObjCreator.createParamObj(docKey);
-   requestArray[PARAM_FILE_NAME] =  docName;
-   requestArray[PARAM_FILE_HASH] =  docHash;
+	// Read the document content and generate document hash
+    var reader = new FileReader();
+    reader.onload = function(event) {
+        var contentInBuffer = event.target.result;
+        var array = new Uint8Array(contentInBuffer);
+        window.console.log(" doc size " + array.length);
+        const fileHash = generateHashOfFileContent(array);
+        window.console.log('fileHash: ' + fileHash);
+	if(_file.name == null){alert("Select document to verify"); return;}
+	if(docKey == null) {alert("Input document key"); return;}
+	if(fileHash == null) {alert("Select document to verify"); return;}
+        var requestArray = that.paramObjCreator.createParamObj(docKey);
+   requestArray[PARAM_FILE_NAME] =  _file.name;
+   requestArray[PARAM_FILE_HASH] =  fileHash;
    
-   verifyFromMockStorage(requestArray, docHash, function(result) {
+   verifyFromMockStorage(requestArray, fileHash, function(result) {
        if (result !== null) {
-           window.console.log("Verification response " + result);
-           alert("Document verification " + (result?"Success":"Failed"));
+           window.console.log("Verification response " + result.status + " message " + result.message);
+           alert("Document verification " + (result.status===RESPONSE_SUCCESS?"success":"failed"));
        } else {
            window.console.log("Error in operation download document");
        }
    });
+    };
+    reader.readAsArrayBuffer(_file);
+  
 };
 
 
@@ -209,13 +214,39 @@ ProtocolManager.prototype.verifyDocument = function() {
 ProtocolManager.prototype.bindButtons = function() {
     var that = this;
     //-------------------------------------
-    //FileSelect
-    document.getElementById('file').addEventListener('change', function(evt) {
+    // FileSelect for upload
+    document.getElementById('upload-file').addEventListener('change', function(evt) {
         that.uploadDocInfo.files = evt.target.files; // FileList object
-
-        window.console.log("size " + that.uploadDocInfo.files[0].size);
-        window.console.log("name " + that.uploadDocInfo.files[0].name);
+		const uploadDocNameInput = document.getElementById('upload-document-name');
+		if(that.uploadDocInfo.files[0] !== null && that.uploadDocInfo.files[0] !== undefined){
+			const fileName = that.uploadDocInfo.files[0].name;
+			window.console.log("size " + that.uploadDocInfo.files[0].size);
+			window.console.log("name " + fileName);
+			uploadDocNameInput.value = fileName;
+		}
+		else {
+			window.console.log("File not selected ");
+			uploadDocNameInput.value = "";
+		}
     }, false);
+	
+	// File select for verify
+	document.getElementById('verify-file').addEventListener('change', function(evt) {
+        that.uploadDocInfo.verifyFiles = evt.target.files; // FileList object
+		const docNameInput = document.getElementById('verify-document-name');
+		if(that.uploadDocInfo.verifyFiles[0] !== null && that.uploadDocInfo.verifyFiles[0] !== undefined){
+			const fileName = that.uploadDocInfo.verifyFiles[0].name;
+			window.console.log("size " + that.uploadDocInfo.verifyFiles[0].size);
+			window.console.log("name " + fileName);
+			docNameInput.value = fileName;
+		}
+		else {
+			window.console.log("File not selected ");
+			docNameInput.value = "";
+		}
+    }, false);
+	
+	
     document.getElementById("upload-document").addEventListener("click", function() {
         if(that.uploadDocInfo == null) alert("Select a document");
         that.uploadDocument(that.uploadDocInfo.files[0]);
@@ -226,30 +257,20 @@ ProtocolManager.prototype.bindButtons = function() {
     });
 
     document.getElementById("request-verify").addEventListener("click", function() {
-        that.verifyDocument();
+        that.verifyDocument(that.uploadDocInfo.verifyFiles[0]);
     });
 	
-	document.getElementById("home-btn").addEventListener("click", function() {
-		console.log("home button clicked");
-		var fileName = location.href.split("/").slice(-1); 
-		console.log("home button clicked : " + fileName);
-		if(fileName != "document_manager.html"){
-			console.log("home button clicked before: " + fileName);
-			window.open("document_manager.html", "_top");
-			console.log("home button clicked after : " + fileName);
-		}
+	
+	document.getElementById("custom-upload-btn").addEventListener("click", function() {
+		console.log("custom-upload button clicked");
+		document.getElementById("upload-file").click();
     });
 
-	document.getElementById("explorer-btn").addEventListener("click", function() {
-		console.log("explorer button clicked");
-		var fileName = location.href.split("/").slice(-1); 
-		console.log("explorer button clicked : " + fileName);
-		if(fileName != "block_explorer.html"){
-			console.log("home button clicked before: " + fileName);
-			window.open("block_explorer.html", "_top");
-			console.log("home button clicked after : " + fileName);
-		}
-    });
+	document.getElementById("custom-verify-btn").addEventListener("click", function() {
+		console.log("custom-verify button clicked");
+		document.getElementById("verify-file").click();
+    });	
+	
 };
 
 ProtocolManager.prototype.onReady = function() {

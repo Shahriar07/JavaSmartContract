@@ -68,7 +68,7 @@ public class DocumentContainer extends State {
     }
 
     public DocumentContainer setKey() {
-        this.key = State.makeKey(new String[] { this.fileName, this.docKey });
+        this.key = State.makeKey(new String[] { this.docKey});
         return this;
     }
 

@@ -77,19 +77,13 @@ function sendRequestToServer( requestArray, baseUrl, api, type, callback) {
         }
         var responseObject = JSON.parse(request.responseText);
         if (responseObject.responseCode == RESPONSE_SUCCESS) {
+			window.console.log("Operation " + responseObject.responseMessage + " : " + responseObject.data );
 			if (isTypeCallback(callback))
-				callback({status : RESPONSE_SUCCESS, data : responseObject.data});
+				callback({status : RESPONSE_SUCCESS, message: responseObject.responseMessage, data : responseObject.data});
         } else {
-			if(responseObject.data != null) {
 				window.console.log("Error in operation " + responseObject.responseMessage + " : " + responseObject.data );
 				if (isTypeCallback(callback))
-					callback({status : responseObject.responseCode, data : responseObject.data});
-			}
-			else {
-				window.console.log("Error in operation " + responseObject.responseMessage);
-				if (isTypeCallback(callback))
-					callback({status : responseObject.responseCode, data : responseObject.data});
-			}
+					callback({status : responseObject.responseCode, message: responseObject.responseMessage, data : responseObject.data});
         }
     };
 }

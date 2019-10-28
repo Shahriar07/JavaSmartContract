@@ -107,27 +107,6 @@ public class DocumentContract implements ContractInterface {
         return Utility.prepareSha256Hash(fileName + docKey + fileHash + chunkCount);
     }
 
-
-    /**
-     * Generates an upload token to initiate the upload operation
-     * This token will be used later to identify the document
-     *
-     * @param fileName
-     * @param docKey
-     * @param count
-     * @return
-     * @throws NoSuchAlgorithmException
-     */
-    private ArrayList<String> generateChunkKeyList(String fileName, String docKey, int count) {
-        ArrayList<String> keyList = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-        	String chunkKey = (fileName + "_" + docKey + "_" + i);
-        	System.out.println("ChunkKey : " + chunkKey);
-            keyList.add(chunkKey);
-        }
-        return keyList;
-    }
-
     /**
      * Add chunk to a document
      *
@@ -140,11 +119,11 @@ public class DocumentContract implements ContractInterface {
      */
 
     @Transaction
-    public boolean uploadDocumentChunk(DocumentHolderContext ctx, String fileName, String documentBytes, String chunkKeyPrefix, String docKey, int chunkNumber) {
+    public boolean uploadDocumentChunk(DocumentHolderContext ctx, String documentBytes, String chunkKeyPrefix, String docKey, int chunkNumber) {
 
         // retrieves the document metadata
         long getMetadataStart = System.currentTimeMillis();
-        DocumentContainer document = getDocumentMetadata(ctx, fileName, docKey);
+        DocumentContainer document = getDocumentMetadata(ctx, docKey);
         if (document == null) {
             System.out.println("Document not found with the filename and upload token");
             return false;
@@ -171,9 +150,9 @@ public class DocumentContract implements ContractInterface {
      * @param {String}  document token
      */
     @Transaction
-    public DocumentContainer getDocumentMetadata(DocumentHolderContext ctx, String fileName, String docKey) {
+    public DocumentContainer getDocumentMetadata(DocumentHolderContext ctx, String docKey) {
 
-        String key = State.makeKey(new String[]{fileName, docKey});
+        String key = State.makeKey(new String[]{docKey});
         System.out.println("LedgerKey " + key);
 
         // retrieve the document metadata from the state
@@ -192,7 +171,7 @@ public class DocumentContract implements ContractInterface {
     @Transaction
     public String getDocumentHash(DocumentHolderContext ctx, String fileName, String docKey) {
 
-        String key = State.makeKey(new String[]{fileName, docKey});
+        String key = State.makeKey(new String[]{docKey});
         System.out.println("LedgerKey " + key);
 
         // retrieve the document metadata from the state
@@ -216,9 +195,9 @@ public class DocumentContract implements ContractInterface {
      * @param {String}  document token
      */
     @Transaction
-    public int getDocumentChunkCount(DocumentHolderContext ctx, String fileName, String docKey) {
+    public int getDocumentChunkCount(DocumentHolderContext ctx, String docKey) {
 
-        String key = State.makeKey(new String[]{fileName, docKey});
+        String key = State.makeKey(new String[]{ docKey});
         System.out.println("LedgerKey " + key);
 
         // retrieve the document metadata from the state
@@ -229,7 +208,7 @@ public class DocumentContract implements ContractInterface {
             return document.getChunkCount();
         }
 
-        System.out.println("Document not found for filename " + fileName + " and docKey " + docKey);
+        System.out.println("Document not found for docKey " + docKey);
         return 0;
     }
 
@@ -246,7 +225,7 @@ public class DocumentContract implements ContractInterface {
     public String getDocumentChunk(DocumentHolderContext ctx, String fileName, String docKey, String chunkKeyPrefix, int chunkNumber) {
         long getChunkStart = System.currentTimeMillis();
         // retrieves the document metadata
-        DocumentContainer document = getDocumentMetadata(ctx, fileName, docKey);
+        DocumentContainer document = getDocumentMetadata(ctx, docKey);
         if (document == null) {
             System.out.println("Document not found with the filename and upload token");
             return null;

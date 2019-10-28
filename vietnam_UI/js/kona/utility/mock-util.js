@@ -34,15 +34,7 @@ function downloadFromMockStorage(requestArray, fileName, callback) {
 function verifyFromMockStorage(requestArray, docHash, callback) {
 	console.log("downloadDocumentAPI ::"+ verifyDocumentAPI + " Request Array " + requestArray);
 
-   sendRequestToServerForFileDownload(requestArray, serverBaseUrl, verifyDocumentAPI, "POST", function (response) {
-	   if (response === null || response === "undefined") {
-			   window.console.error("downloadFromMockStorage Error in response");
-		   return;
-	   } else {
-				window.console.log("Document verification success" + response);
-		   return;
-	   }
-   });
+   sendRequestToServer(requestArray, serverBaseUrl, verifyDocumentAPI, "POST", callback);
 }
 
 
