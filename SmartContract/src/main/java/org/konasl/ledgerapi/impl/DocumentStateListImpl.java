@@ -15,6 +15,8 @@ import org.hyperledger.fabric.shim.ledger.CompositeKey;
 
 import org.konasl.util.Utility;
 
+import static org.konasl.constants.Constants.LIST_NAME;
+
 /**
  * DocumentStateList provides a named virtual container for a set of ledger states. Each
  * state has a unique key which associates it with the container, rather than
@@ -36,7 +38,7 @@ public class DocumentStateListImpl implements DocumentStateList {
     public DocumentStateListImpl(Context ctx, String listName, StateDeserializer deserializer) {
         this.ctx = ctx;
 //        this.name = listName;
-        this.name = "documentHolder";
+        this.name = LIST_NAME;
         this.deserializer = deserializer;
 
     }
