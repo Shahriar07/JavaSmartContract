@@ -7,8 +7,12 @@ import com.konasl.documenthandler.protocol.ResponseCodeEnum;
 import com.konasl.documenthandler.protocol.RestResponse;
 import com.konasl.documenthandler.protocol.apidata.DocumentContainer;
 import com.konasl.documenthandler.util.Utility;
+import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.fabric.gateway.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -28,9 +32,12 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  * @since 10/14/2019 12:30
  */
 
+@Slf4j
 @Service
 public class DownloadServiceImpl implements DownloadService
 {
+
+    private Logger logger = LoggerFactory.getLogger(DownloadServiceImpl.class);
 
     @Autowired
     private AuthUser authUser;
@@ -41,23 +48,23 @@ public class DownloadServiceImpl implements DownloadService
     @Override
     public RestResponse downloadDocument(String fileName, String documentKey) {
         long startTime = System.currentTimeMillis();
-        System.out.println("Start time : " + startTime);
+        logger.info("Start time : " + startTime);
         Network network = authUser.authUserandGenerateNetwork();
         if (network == null) {
-            System.out.println("Network generation failed");
+            logger.error("Network generation failed");
             return new RestResponse(ResponseCodeEnum.BLOCKCHAIN_NETWORK_CONNECTION_FAILED);
         }
 
         try {
             // Get addressability to document contract
-            System.out.println("Use org.konasl.documentcontainer smart contract.");
+            logger.error("Use org.konasl.documentcontainer smart contract.");
             Contract contract = network.getContract(NetworkConstants.CHAIN_CODE_NAME, NetworkConstants.CHAIN_CODE_CONTRACT_NAME);
 
         // Get file metadata from contract
         // Get chunk of files
-            String documentInfo =  getChunkCountFromTheBlockChain(fileName, documentKey, contract);
+            String documentInfo =  getMetadataFromTheBlockChain(documentKey, contract);
             if (documentInfo == null) {
-                System.out.println("Document metadata not found");
+                logger.error("Document metadata not found");
                 return new RestResponse(ResponseCodeEnum.DOCUMENT_NOT_EXIST);
             }
             DocumentContainer documentContainer = new ObjectMapper().readValue(documentInfo, DocumentContainer.class);
@@ -72,13 +79,13 @@ public class DownloadServiceImpl implements DownloadService
 
                // return actual file
                long endTime = System.currentTimeMillis();
-               System.out.println("End time :" + endTime + " Duration " + (endTime - startTime));
+               logger.info("End time :" + endTime + " Duration " + (endTime - startTime));
                return new RestResponse(ResponseCodeEnum.SUCCESS, file);
            }
             return new RestResponse(ResponseCodeEnum.FAILURE);
         } catch (Exception e){
             e.printStackTrace();
-            System.out.println("Error : " + e.getMessage());
+            logger.error("Error : " + e.getMessage());
             return new RestResponse(ResponseCodeEnum.FAILURE, e.getMessage());
         }
     }
@@ -97,15 +104,15 @@ public class DownloadServiceImpl implements DownloadService
         if (fileName == null || documentKey == null || documentHash == null || fileName.isEmpty()
             || documentKey.isEmpty() || documentHash.isEmpty())
         {
-            System.out.println("Input data verification failed");
+            logger.error("Input data verification failed");
             return new RestResponse(ResponseCodeEnum.DOCUMENT_DATA_VERIFICATION_FAILED);
         }
 
         long startTime = System.currentTimeMillis();
-        System.out.println("Start time : " + startTime);
+        logger.info("Start time : " + startTime);
         Network network = authUser.authUserandGenerateNetwork();
         if (network == null) {
-            System.out.println("Network generation failed");
+            logger.error("Network generation failed");
             return new RestResponse(ResponseCodeEnum.BLOCKCHAIN_NETWORK_CONNECTION_FAILED);
         }
 
@@ -117,21 +124,64 @@ public class DownloadServiceImpl implements DownloadService
             if (response.length > 0) {
                 String decodedString = new String(response, UTF_8);
                 if (documentHash.equalsIgnoreCase(decodedString)) {
-                    System.out.println("verify duration : " + (System.currentTimeMillis()-startTime));
+                    logger.info("verify duration : " + (System.currentTimeMillis()-startTime));
                     return new RestResponse(ResponseCodeEnum.SUCCESS);
                 }
                 else {
-                    System.out.println("verify duration : " + (System.currentTimeMillis()-startTime));
+                    logger.error("verify duration : " + (System.currentTimeMillis()-startTime));
                     return new RestResponse(ResponseCodeEnum.DOCUMENT_HASH_VERIFICATION_FAILED);
                 }
 
             }
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("Error : " + e.getMessage());
+            logger.error("Error : " + e.getMessage());
         }
-        System.out.println("verify duration : " + (System.currentTimeMillis()-startTime));
+        logger.info("verify duration : " + (System.currentTimeMillis()-startTime));
         return new RestResponse(ResponseCodeEnum.DOCUMENT_HASH_VERIFICATION_FAILED);
+    }
+
+    /**
+     * retrieves the document name from the smart contract
+     *
+     * @param documentKey
+     * @return
+     */
+
+    @Override
+    public RestResponse getDocumentName(String documentKey) {
+        long startTime = System.currentTimeMillis();
+        logger.info("Start time : " + startTime);
+        Network network = authUser.authUserandGenerateNetwork();
+        if (network == null) {
+            logger.error("Network generation failed");
+            return new RestResponse(ResponseCodeEnum.BLOCKCHAIN_NETWORK_CONNECTION_FAILED);
+        }
+
+        try {
+            // Get addressability to document contract
+            logger.info("Use org.konasl.documentcontainer smart contract.");
+            Contract contract = network.getContract(NetworkConstants.CHAIN_CODE_NAME, NetworkConstants.CHAIN_CODE_CONTRACT_NAME);
+
+            // Get file metadata from contract
+            // Get chunk of files
+            String documentInfo = getMetadataFromTheBlockChain(documentKey, contract);
+            if (documentInfo == null) {
+                logger.error("Document metadata not found");
+                return new RestResponse(ResponseCodeEnum.DOCUMENT_NOT_EXIST);
+            }
+            DocumentContainer documentContainer = new ObjectMapper().readValue(documentInfo, DocumentContainer.class);
+            if (documentContainer == null || documentContainer.getChunkCount() < 1) {
+                logger.error("Document metadata not found");
+                return new RestResponse(ResponseCodeEnum.DOCUMENT_NOT_EXIST);
+            }
+            logger.info("verify duration : " + (System.currentTimeMillis()-startTime));
+            return new RestResponse(ResponseCodeEnum.SUCCESS, documentContainer.getFileName());
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("Error : " + e.getMessage());
+            return new RestResponse(ResponseCodeEnum.BLOCK_INFO_GENERATION_FAILED);
+        }
     }
 
     /**
@@ -152,29 +202,29 @@ public class DownloadServiceImpl implements DownloadService
         private File prepareFileFromChunks(Path temporaryPath, String fileName, int chunkCount, String documentKey, Contract contract) throws IOException, FileNotFoundException, GatewayException, TimeoutException, InterruptedException {
 
             if (fileName == null || contract == null || chunkCount < 1) {
-                System.out.println("File data validation failed");
+                logger.error("File data validation failed");
                 return null;
             }
-            System.out.println("newFileDirectoryPath " + temporaryPath + " fileName " + fileName);
+            logger.info("newFileDirectoryPath " + temporaryPath + " fileName " + fileName);
             Path createdPath = null;
             // create a new directory if not exist
             if (!Files.exists(temporaryPath)) {
-                System.out.println("Generate newFileDirectory " + temporaryPath);
+                logger.info("Generate newFileDirectory " + temporaryPath);
                 createdPath = Files.createDirectory(temporaryPath);
                 if (createdPath == null) {
-                    System.out.println("New directory Creation failed");
+                    logger.error("New directory Creation failed");
                     return null;
                 }
             }
             if (Files.exists(temporaryPath)) {
-                System.out.println("Directory exists ");
+                logger.info("Directory exists ");
                 Path newFilePath = temporaryPath.resolve(fileName);
                 File originalFile = new File(newFilePath.toString());
                 if (!originalFile.exists()) {
 
                     boolean isCreated = originalFile.createNewFile();
                     if (!isCreated) {
-                        System.out.println("New File Creation failed !isCreated");
+                        logger.error("New File Creation failed !isCreated");
                         return null;
                     }
                 }
@@ -192,34 +242,32 @@ public class DownloadServiceImpl implements DownloadService
                             byte[] response = contract.submitTransaction(NetworkConstants.DOWNLOAD_CHUNK_FUNCTION_NAME, fileName, documentKey, chunkKeyPrefix, ""+count);
                             //byte[] response2 = hexStringToByteArray(responseString);
                             long writeStartTime = System.currentTimeMillis();
-                            System.out.println("Response received for " + chunkFileName + " length " + response.length + " response duration " + (writeStartTime - responseStartTime));
+                            logger.info("Response received for " + chunkFileName + " length " + response.length + " response duration " + (writeStartTime - responseStartTime));
                             if (response.length > 0) {
                                 String decodedString = new String(response, UTF_8);
                                 byte[] chunkBytes = hexStringToByteArray(decodedString);
                                 writeBytesToFile(chunkBytes, originalFile, count != 0); // First time will be false to create a new file, after that append the file
                                 long writeEndTime = System.currentTimeMillis();
-                                System.out.println("Write duration time : " + (writeEndTime-writeStartTime));
+                                logger.info("Write duration time : " + (writeEndTime-writeStartTime));
                             }
                         }
                         // return the original file
                         return originalFile;
                     } catch (GatewayRuntimeException e) {
                         e.printStackTrace();
-                        System.out.println("Error : " + e.getMessage());
+                        logger.error("Error : " + e.getMessage());
                         //	throw e;
                     }
                 }
             }
-            System.out.println("New File Creation failed newGeneratedFile");
+            logger.info("New File Creation failed newGeneratedFile");
             return null;
         }
 
 
         /**
-         * Upload file metadata to the blockchain
-         * Contract prepares an token to upload the chunk
+         * Retrieves the file metadata from the blockchain
          *
-         * @param fileName
          * @param documentKey
          * @param contract
          * @return chunkCount of uploaded document
@@ -227,18 +275,13 @@ public class DownloadServiceImpl implements DownloadService
          * @throws TimeoutException
          * @throws ContractException
          */
-        private String getChunkCountFromTheBlockChain(String fileName, String documentKey, Contract contract) throws InterruptedException, TimeoutException, ContractException {
-            //validate input data
-//            if (fileName == null || "".equals(fileName)) {
-//                System.out.println("Invalid File Name");
-//                return 0;
-//            }
+        private String getMetadataFromTheBlockChain( String documentKey, Contract contract) throws InterruptedException, TimeoutException, ContractException {
             if (documentKey == null || "".equals(documentKey)) {
-                System.out.println("Invalid File token");
+                logger.error("Invalid File token");
                 return null;
             }
             if (contract == null) {
-                System.out.println("Invalid contract ");
+                logger.error("Invalid contract ");
                 return null;
             }
 

@@ -1,9 +1,8 @@
 package com.konasl.documenthandler.protocol.services.blockparser;
 
 import com.konasl.documenthandler.auth.AuthUser;
-import com.konasl.documenthandler.constants.NetworkConstants;
 import com.konasl.documenthandler.protocol.apidata.BlockInfoContainer;
-import com.konasl.documenthandler.util.Utility;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
 import org.hyperledger.fabric.gateway.Network;
 import org.hyperledger.fabric.sdk.BlockInfo;
@@ -12,6 +11,8 @@ import org.hyperledger.fabric.sdk.Channel;
 import org.hyperledger.fabric.sdk.exception.InvalidArgumentException;
 import org.hyperledger.fabric.sdk.exception.InvalidProtocolBufferRuntimeException;
 import org.hyperledger.fabric.sdk.exception.ProposalException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,34 +26,29 @@ import static org.hyperledger.fabric.sdk.BlockInfo.EnvelopeType.TRANSACTION_ENVE
  * parse required information from the block
  */
 
+@Slf4j
 @Service
 public class BlockInformationParser {
+
+    private Logger logger = LoggerFactory.getLogger(BlockInformationParser.class);
 
     @Autowired
     private AuthUser authUser;
 
-    @Autowired
-    NetworkConstants networkConstants;
-
-    @Autowired
-    Utility utility;
-
     public Channel getChannel() {
         Network network = authUser.authUserandGenerateNetwork();
         if (network == null) {
-            System.out.println("Network generation failed");
+            logger.error("Network generation failed");
             return null;
         }
 
         try {
             Channel channel = network.getChannel();
             if (channel == null) {
-                System.out.println("KonaChannel not initialized");
+                logger.error("Channel not initialized");
                 return null;
             }
-            System.out.println("KonaChannel has initialized");
-
-            final String channelName = channel.getName();
+            logger.info("KonaChannel has initialized");
             return channel;
         } catch (Exception e) {
             e.printStackTrace();
@@ -83,7 +79,7 @@ public class BlockInformationParser {
             // get the block from the network
             BlockInfo returnedBlock = channel.queryBlockByNumber(reqBlockNumber);
             if (returnedBlock == null) {
-                System.out.println("Block not found with number " + reqBlockNumber);
+                logger.error("Block not found with number " + reqBlockNumber);
                 return null;
             }
 
@@ -114,8 +110,10 @@ public class BlockInformationParser {
                 }
                 return blockInfoContainer;
         } catch (InvalidProtocolBufferRuntimeException e) {
+            logger.error("Block not found with number " + reqBlockNumber);
             throw e.getCause();
         } catch (ProposalException e){
+            logger.error("Block not found with number " + reqBlockNumber);
             throw e.getCause();
         }
     }

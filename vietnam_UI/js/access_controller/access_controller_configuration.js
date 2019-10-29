@@ -14,12 +14,14 @@ var uploadDocumentAPI = "/api/document/upload";
 
 // Download APIs
 var downloadDocumentAPI = "/api/document/download";
+var getDocumentNameAPI = "/api/document/getName";
 
 // Verify API
 var verifyDocumentAPI = "/api/document/verify";
 
 // Block Query API
 var getBlockQueryAPI = "/api/explore/block";
+
 
 
 

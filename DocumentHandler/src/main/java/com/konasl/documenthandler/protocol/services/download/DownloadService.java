@@ -12,4 +12,6 @@ public interface DownloadService {
     RestResponse downloadDocument(String fileName, String documentKey);
 
     RestResponse verifyDocument(String fileName, String documentKey, String documentHash);
+
+    RestResponse getDocumentName(String documentKey);
 }

@@ -1,6 +1,10 @@
 package com.konasl.documenthandler.util;
 
 import com.konasl.documenthandler.constants.Constants;
+import com.konasl.documenthandler.protocol.services.upload.UploadServiceImpl;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,9 +25,11 @@ import static java.lang.String.format;
  * @author H. M. Shahriar (h.m.shahriar@konasl.com)
  * @since 10/10/2019 18:53
  */
-
+@Slf4j
 @Component
 public class Utility {
+
+    private Logger logger = LoggerFactory.getLogger(UploadServiceImpl.class);
 
     /**
      * Common utility function to print data
@@ -189,13 +195,13 @@ public class Utility {
         try {
             inputStream = new BufferedInputStream(new FileInputStream(file));
             FileCopyUtils.copy(inputStream, response.getOutputStream());
-            System.out.println("Raw Data Download response sent");
+            logger.info("Raw Data Download response sent");
         } catch (IOException e) {
-            System.out.println("Error while download raw data file {}" + fileName);
+            logger.error("Error while download raw data file {}" + fileName);
         } finally {
             if (inputStream != null)
                 inputStream.close();
-            System.out.println("InputStream of file: {} Closed" + fileName);
+            logger.info("InputStream of file: {} Closed" + fileName);
 
         }
         if (file.exists()) file.delete();

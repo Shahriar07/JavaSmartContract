@@ -22,6 +22,8 @@ import javax.validation.Valid;
 
 @RestController
 public class BlockExplorerController {
+
+
     @Autowired
     BlockInformationParser blockParser;
 
@@ -41,6 +43,9 @@ public class BlockExplorerController {
             }
         } catch (Exception e){
             e.printStackTrace();
+            return new RestResponse(ResponseCodeEnum.BLOCK_INFO_GENERATION_FAILED);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
             return new RestResponse(ResponseCodeEnum.BLOCK_INFO_GENERATION_FAILED);
         }
     }

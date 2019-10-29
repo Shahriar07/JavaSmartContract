@@ -53,4 +53,9 @@ public class DownloadController {
                                            @RequestParam("documentHash") @Valid String documentHash) {
         return downloadService.verifyDocument(fileName, documentKey, documentHash);
     }
+
+    @RequestMapping(value = "/api/document/getName", method = RequestMethod.POST)
+    public RestResponse getDocumentName(@RequestParam("documentKey") @Valid String documentKey) {
+        return downloadService.getDocumentName(documentKey);
+    }
 }

@@ -21,9 +21,7 @@ function UploadDocumentInfo() {
 
 /** 
  * Constructor of protocol manager
- * initialize the server communication module and 
- * the blockchain communication module.
- * It also initializes the document container contract information
+ * initialize the server communication module
  */
 
 function ProtocolManager() {
@@ -31,16 +29,6 @@ function ProtocolManager() {
     this.uploadDocInfo = new UploadDocumentInfo();
 }
 
-
-/**
- * sets a new document container contract to upload or download a document
- * @param _contract {object} new smart contract object with abi, address and data
- */
-ProtocolManager.prototype.setDocumentContainer = function(_documentContainer) {
-    if (_documentContainer !== null && _documentContainer !== undefined && typeof _documentContainer.address == 'string') {
-        this.Contract = _documentContainer;
-    }
-};
 
 /**
  * validates the file
@@ -56,15 +44,9 @@ ProtocolManager.prototype.validateFile = function(_file) {
 
 /**
  * This is the entry point of the document upload protocol
- * It initiates the upload procedure of a document,
- * prepare the unique identifier(document Key) of the uploading document, 
- * calculates document hash,
- * prepare signature with document hash,
- * send request to the server for payment token 
+ * It performs the upload procedure of a document
  * 
  * @param _file {file}: actual document is being uploaded.
- * @param userAddress {string} : blockchain address of the document uploader
- * @param documentContainerAddress {string} : smart contract address which holds the document information in blockchain.
  */
 
 ProtocolManager.prototype.uploadDocument = function(_file) {
@@ -78,43 +60,32 @@ ProtocolManager.prototype.uploadDocument = function(_file) {
 
     // Get document Key
     var docKey = document.getElementById("docKey").value;
-    if(docKey == null){
+    if(docKey === null || docKey === undefined){
         alert("Document key is empty");
         return;
     }
     window.console.log("Document Key " + docKey);
-    // Read the document content and generate document hash
-    var reader = new FileReader();
-    reader.onload = function(event) {
-        var contentInBuffer = event.target.result;
-        var array = new Uint8Array(contentInBuffer);
-        window.console.log(" doc size " + array.length);
-        that.uploadDocInfo.fileHash = generateHashOfFileContent(array);
-        window.console.log('fileHash: ' + that.uploadDocInfo.fileHash);
-
-        that.sendDocumentToServer(_file, docKey, function(result) {
-            if (result !== null) {
-                window.console.log("Upload response " + result.status + " Message " + result.data );
-				alert("Document Upload " + result.message);
-            } else {
-                window.console.log("Error in operation sendDocumentToServer");
-				alert("Document Upload failed");
-            }
-        });
-    };
-    reader.readAsArrayBuffer(_file);
+	
+	that.sendDocumentToServer(_file, docKey, function(result) {
+        if (result !== null) {
+            window.console.log("Upload response " + result.status + " Message " + result.data );
+			alert("Document Upload " + result.message);
+        } else {
+            window.console.log("Error in operation sendDocumentToServer");
+			alert("Document Upload failed");
+        }
+    });
 };
 
 
 /**
- * sendDocumentToServer function uploades the actual document with required information to Auxiliary server
+ * sendDocumentToServer function uploades the actual document with required information to the server
  * @param _document {file} : actual document to upload
  * @param _docKey {string} : unique identification of a document
  * @return object with response code and response message otherwise null if failed
  */
 ProtocolManager.prototype.sendDocumentToServer = function(_document, _docKey, callback) {
 
-    window.console.log(_document);
     window.console.log("docKey " + _docKey);
 
     // Prepare the request array
@@ -137,10 +108,8 @@ ProtocolManager.prototype.sendDocumentToServer = function(_document, _docKey, ca
 /************************************* Download Protocol ************************************/
 
 /**
- * This function will be called to get a payment token from access controller to initiate a document download.
- * @param _docKey: unique identification of a document
- * @param _docHash: SHA-256 hash of the document content
- * @param _userAddress: document downloader blockchain address  
+ * This function will be called to download a document
+ *
  */
 
 ProtocolManager.prototype.downloadDocument = function() {
@@ -151,18 +120,40 @@ ProtocolManager.prototype.downloadDocument = function() {
     var docKey = document.getElementById("download-docKey").value;
     // Get document name
     var docName = document.getElementById("download-docName").value;
-
+	if(docKey === null || docKey === undefined){
+        alert("Document key is empty");
+        return;
+    }
+	
+	// Prepare the request array
 	var requestArray = this.paramObjCreator.createParamObj(docKey);
-    requestArray[PARAM_FILE_NAME] =  docName;
-    
-    downloadFromMockStorage(requestArray, docName, function(result) {
-        if (result !== null) {
-            window.console.log("download response " + result);
-        } else {
-			alert("Document download failed");
-            window.console.log("Error in operation download document");
+	
+	sendPostRequestToServer(requestArray, serverBaseUrl, getDocumentNameAPI, function (response) {
+        if (response === null || response === "undefined") {
+			window.console.error("sendDocumentToServer Error in response");
+			callback(response);
+            return;
         }
-    });
+		// Document name received from the smart contract
+		if (response.status === RESPONSE_SUCCESS) {
+			console.log("Retrieved document name : " + response.data);
+			var requestArray = that.paramObjCreator.createParamObj(docKey);
+			requestArray[PARAM_FILE_NAME] =  docName;
+    		downloadFromMockStorage(requestArray, response.data, function(result) {
+				if (result !== null) {
+					window.console.log("download response " + result);
+				} else {
+					alert("Document download failed");
+					window.console.log("Error in operation download document");
+				}
+			});
+		} else {
+			alert("Document download failed : " + response.message );
+			window.console.log("Error in operation download document " + response.message);
+		}
+	});
+
+	
 };
 
 /************************************* Download Protocol End ************************************/

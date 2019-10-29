@@ -5,11 +5,15 @@ import com.konasl.documenthandler.constants.NetworkConstants;
 import com.konasl.documenthandler.protocol.ResponseCodeEnum;
 import com.konasl.documenthandler.protocol.RestResponse;
 import com.konasl.documenthandler.protocol.apidata.UploadResponse;
+import com.konasl.documenthandler.protocol.services.download.DownloadServiceImpl;
 import com.konasl.documenthandler.util.Utility;
+import lombok.extern.slf4j.Slf4j;
 import org.hyperledger.fabric.gateway.Contract;
 import org.hyperledger.fabric.gateway.ContractException;
 import org.hyperledger.fabric.gateway.GatewayException;
 import org.hyperledger.fabric.gateway.Network;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,17 +29,20 @@ import java.util.concurrent.TimeoutException;
 import static com.konasl.documenthandler.util.Utility.byteArrayToString;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+@Slf4j
 @Service
 public class UploadServiceImpl implements UploadService{
+
+    private Logger logger = LoggerFactory.getLogger(UploadServiceImpl.class);
 
     @Autowired
     private AuthUser authUser;
 
     @Autowired
-    NetworkConstants networkConstants;
+    private NetworkConstants networkConstants;
 
     @Autowired
-    Utility utility;
+    private Utility utility;
 
     /**
      * Upload a document to the blockchain
@@ -48,32 +55,32 @@ public class UploadServiceImpl implements UploadService{
     public RestResponse uploadDocument(MultipartFile file, String documentKey) {
 
         if (file == null) {
-            System.out.println("Argument type mismatch. Add the file path as agrument to upload a document");
+            logger.error("Argument type mismatch. Add the file path as agrument to upload a document");
             return new RestResponse(ResponseCodeEnum.DOCUMENT_DATA_VERIFICATION_FAILED);
         }
         long startTime = System.currentTimeMillis();
-        System.out.println("Start time : " + startTime);
+        logger.info("Start time : " + startTime);
         Network network = authUser.authUserandGenerateNetwork();
         if (network == null) {
-            System.out.println("Network generation failed");
+            logger.error("Network generation failed");
             return new RestResponse(ResponseCodeEnum.BLOCKCHAIN_NETWORK_CONNECTION_FAILED);
         }
 
         try {
             // Get addressability to document contract
-            System.out.println("Use org.konasl.documentcontainer smart contract.");
+            logger.info("Use org.konasl.documentcontainer smart contract.");
             Contract contract = network.getContract(NetworkConstants.CHAIN_CODE_NAME, NetworkConstants.CHAIN_CODE_CONTRACT_NAME);
 
             // Insert document to fabric network
-            System.out.println("Submit upload document transaction.");
+            logger.info("Submit upload document transaction.");
             RestResponse uploadResponse = uploadFileInChunks(file, networkConstants.getFileChunkSize(), contract, documentKey); // file, maxchunk size in bytes, contract
 
             if (!ResponseCodeEnum.SUCCESS.getCode().equals(uploadResponse.getResponseCode())) {
-                System.out.println("Upload failed : " + uploadResponse.getResponseMessage());
+                logger.error("Upload failed : " + uploadResponse.getResponseMessage());
             }
 
             long endTime = System.currentTimeMillis();
-            System.out.println("End time :" + endTime + " Duration " + (endTime-startTime));
+            logger.info("End time :" + endTime + " Duration " + (endTime-startTime));
             return uploadResponse;
 
         } catch (GatewayException | IOException | TimeoutException | InterruptedException | NoSuchAlgorithmException e) {
@@ -102,7 +109,7 @@ public class UploadServiceImpl implements UploadService{
         }
         public void run() {
             long startTime = System.currentTimeMillis();
-            System.out.println("startTime : " + startTime + " chunk " + counter);
+            logger.info("startTime : " + startTime + " chunk " + counter);
             byte[] response = new byte[0];
             try {
                 response = contract.submitTransaction(NetworkConstants.UPLOAD_DOC_CHUNK_FUNCTION_NAME, chunkString, chunkKeyPrefix, documentKey, ""+counter);
@@ -114,7 +121,7 @@ public class UploadServiceImpl implements UploadService{
                 e.printStackTrace();
             }
             long endTime = System.currentTimeMillis();
-            System.out.println(fileName + "_" + counter + " transaction response : " + new String(response, UTF_8) + " Duration " + (endTime-startTime));
+            logger.info(fileName + "_" + counter + " transaction response : " + new String(response, UTF_8) + " Duration " + (endTime-startTime));
         }
 
     }
@@ -134,7 +141,7 @@ public class UploadServiceImpl implements UploadService{
      */
     private RestResponse uploadFileInChunks(MultipartFile file, int chunkSize, Contract contract, String documentKey) throws IOException, GatewayException, TimeoutException, InterruptedException, NoSuchAlgorithmException {
         if (file == null || chunkSize < 1) {
-            System.out.println("File data validation failed");
+            logger.error("File data validation failed");
             return new RestResponse(ResponseCodeEnum.FAILURE, ResponseCodeEnum.DOCUMENT_DATA_VERIFICATION_FAILED);
         }
         long allStartTime = System.currentTimeMillis();
@@ -142,9 +149,9 @@ public class UploadServiceImpl implements UploadService{
         long length = file.getSize();
 
         String fileName = file.getOriginalFilename();
-        System.out.println("File size : " + length + ", File Name : " + fileName);
+        logger.info("File size : " + length + ", File Name : " + fileName);
         String fileHash = Utility.prepareSha256HashofMultipartFile(file);
-        System.out.println("File hash : " + fileHash);
+        logger.info("File hash : " + fileHash);
         long chunkCount = (length / chunkSize) + 1;
 
         String chunkKeyPrefix = utility.prepareChunkKeyPrefix(fileName, documentKey);
@@ -172,20 +179,20 @@ public class UploadServiceImpl implements UploadService{
 //                long startTime = System.currentTimeMillis();
 //                byte[] response = contract.submitTransaction(NetworkConstants.UPLOAD_DOC_CHUNK_FUNCTION_NAME, fileName, chunkString, chunkKeyPrefix, documentKey, ""+counter);
 //                long endTime = System.currentTimeMillis();
-//                System.out.println(fileName + "_" + counter + " transaction response : " + new String(response, UTF_8) + " Duration " + (endTime-startTime));
+//                logger.info(fileName + "_" + counter + " transaction response : " + new String(response, UTF_8) + " Duration " + (endTime-startTime));
             }
             start += chunkSize;
             ++counter;
         }
-        System.out.println("Chunk Count " + counter + " chunkSize " + chunkSize);
-        System.out.println("Thread started  " + (System.currentTimeMillis() - allStartTime));
+        logger.info("Chunk Count " + counter + " chunkSize " + chunkSize);
+        logger.info("Thread started  " + (System.currentTimeMillis() - allStartTime));
         executor.shutdown();
         while (!executor.isTerminated()) {
             //if (getFinishedUploadTask() == counter) break;
-            //System.out.println("Counter " + counter + " Finished " + finishedUploadTask);
+            //logger.info("Counter " + counter + " Finished " + finishedUploadTask);
         }
         long endTime = System.currentTimeMillis();
-        System.out.println(" Upload Duration " + (endTime-allStartTime) + " for chunks : " + counter);
+        logger.info(" Upload Duration " + (endTime-allStartTime) + " for chunks : " + counter);
         inputStream.close();
         return new RestResponse(ResponseCodeEnum.SUCCESS, new UploadResponse(counter, fileHash));
     }
@@ -206,15 +213,15 @@ public class UploadServiceImpl implements UploadService{
     private String uploadFileMetadataToTheBlockchain(String fileName, long chunkCount, String fileHash, String documentKey, String chunkKeyPrefix, Contract contract) throws InterruptedException, TimeoutException, ContractException {
         //validate input data
         if (fileName == null || "".equals(fileName)) {
-            System.out.println("Invalid File Name");
+            logger.error("Invalid File Name");
             return null;
         }
         if (fileHash == null || "".equals(fileHash)) {
-            System.out.println("Invalid File Hash");
+            logger.error("Invalid File Hash");
             return null;
         }
         if (contract == null || chunkCount < 1) {
-            System.out.println("Invalid contract or chunk count");
+            logger.error("Invalid contract or chunk count");
             return null;
         }
 
@@ -224,7 +231,7 @@ public class UploadServiceImpl implements UploadService{
             return null;
         }
         String token = new String(response, UTF_8);
-        System.out.println("Token value : " + token);
+        logger.info("Token value : " + token);
         return token;
     }
 }
