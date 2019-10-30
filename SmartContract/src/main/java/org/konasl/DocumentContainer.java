@@ -1,6 +1,3 @@
-/*
- *  SPDX-License-Identifier: Apache-2.0
- */
 package org.konasl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -111,16 +108,18 @@ public class DocumentContainer extends State {
         ObjectMapper mapper = new ObjectMapper();
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
 
-        System.out.println("Byte data is " + new String(data, UTF_8));
-        JSONObject json = new JSONObject(new String(data, UTF_8));
+        //System.out.println("Byte data is " + new String(data, UTF_8));
+
+//        JSONObject json = new JSONObject(new String(data, UTF_8));
         try {
-            String fileName = json.getString("fileName");
-            String documentHash = json.getString("documentHash");
-            int chunkCount = json.getInt("chunkCount");
-            String token = json.getString("token");
-            String docKey = json.getString("docKey");
-            String chunkKeyPrefix = json.getString("chunkKeyPrefix");
-            return createInstance(fileName, documentHash, docKey, chunkCount, token, chunkKeyPrefix);
+//            String fileName = json.getString("fileName");
+//            String documentHash = json.getString("documentHash");
+//            int chunkCount = json.getInt("chunkCount");
+//            String token = json.getString("token");
+//            String docKey = json.getString("docKey");
+//            String chunkKeyPrefix = json.getString("chunkKeyPrefix");
+            DocumentContainer container = mapper.readValue(new String(data, UTF_8), DocumentContainer.class);
+            return createInstance(container.fileName, container.documentHash, container.docKey, container.chunkCount, container.token, container.chunkKeyPrefix);
         } catch (Exception e) {
             e.printStackTrace();
         }

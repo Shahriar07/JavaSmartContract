@@ -1,7 +1,3 @@
-/*
-SPDX-License-Identifier: Apache-2.0
-*/
-
 package org.konasl;
 
 import org.konasl.ledgerapi.DocumentStateList;

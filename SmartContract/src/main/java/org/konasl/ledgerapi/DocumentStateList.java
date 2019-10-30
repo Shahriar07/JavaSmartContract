@@ -1,7 +1,3 @@
-
-/*
-SPDX-License-Identifier: Apache-2.0
-*/
 package org.konasl.ledgerapi;
 
 import org.konasl.ledgerapi.impl.DocumentStateListImpl;
@@ -9,9 +5,6 @@ import org.hyperledger.fabric.contract.Context;
 
 public interface DocumentStateList {
 
-    /*
-     * SPDX-License-Identifier: Apache-2.0
-     */
 
     /**
      * DocumentStateList provides a named virtual container for a set of ledger states. Each

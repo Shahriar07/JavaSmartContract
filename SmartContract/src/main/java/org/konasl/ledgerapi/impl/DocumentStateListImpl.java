@@ -1,19 +1,16 @@
-/*
-SPDX-License-Identifier: Apache-2.0
-*/
-
 package org.konasl.ledgerapi.impl;
 
-import java.util.Arrays;
-
-import org.konasl.ledgerapi.State;
-import org.konasl.ledgerapi.StateDeserializer;
-import org.konasl.ledgerapi.DocumentStateList;
 import org.hyperledger.fabric.contract.Context;
 import org.hyperledger.fabric.shim.ChaincodeStub;
 import org.hyperledger.fabric.shim.ledger.CompositeKey;
-
+import org.konasl.DocumentContract;
+import org.konasl.ledgerapi.DocumentStateList;
+import org.konasl.ledgerapi.State;
+import org.konasl.ledgerapi.StateDeserializer;
 import org.konasl.util.Utility;
+
+import java.util.Arrays;
+import java.util.logging.Logger;
 
 import static org.konasl.constants.Constants.LIST_NAME;
 
@@ -24,6 +21,9 @@ import static org.konasl.constants.Constants.LIST_NAME;
  * parallel transactions on different states.
  */
 public class DocumentStateListImpl implements DocumentStateList {
+
+    // use the classname for the logger, this way you can refactor
+    private final static Logger LOG = Logger.getLogger(DocumentContract.class.getName());
 
     private Context ctx;
     private String name;
@@ -50,19 +50,19 @@ public class DocumentStateListImpl implements DocumentStateList {
      */
     @Override
     public DocumentStateList addState(State state) {
-        System.out.println("Adding state " + this.name);
+        LOG.info("Adding state " + this.name);
         ChaincodeStub stub = this.ctx.getStub();
-        System.out.println("Stub=" + stub);
+        LOG.info("Stub=" + stub);
         String[] splitKey = state.getSplitKey();
-        System.out.println("Split key " + Arrays.asList(splitKey));
+        LOG.info("Split key " + Arrays.asList(splitKey));
 
         CompositeKey ledgerKey = stub.createCompositeKey(this.name, splitKey);
-        System.out.println("ledgerkey is ");
-        System.out.println(ledgerKey);
+        LOG.info("ledgerkey is ");
+        LOG.info(ledgerKey.toString());
 
         byte[] data = State.serialize(state);
-        System.out.println("ctx" + this.ctx);
-        System.out.println("stub" + this.ctx.getStub());
+        LOG.info("ctx" + this.ctx);
+        LOG.info("stub" + this.ctx.getStub());
         this.ctx.getStub().putState(ledgerKey.toString(), data);
         return this;
     }
@@ -78,8 +78,8 @@ public class DocumentStateListImpl implements DocumentStateList {
         CompositeKey ledgerKey = this.ctx.getStub().createCompositeKey(this.name, State.splitKey(key));
 
         byte[] data = this.ctx.getStub().getState(ledgerKey.toString());
-        System.out.println("Data is "+Utility.byteArrayToString(data));
-        System.out.println("LedgerKey "+ledgerKey.toString());
+        LOG.info("Data is " + Utility.byteArrayToString(data));
+        LOG.info("LedgerKey " + ledgerKey.toString());
         if (data != null) {
             State state = this.deserializer.deserialize(data);
             return state;
