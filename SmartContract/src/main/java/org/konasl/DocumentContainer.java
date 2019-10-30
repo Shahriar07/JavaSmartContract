@@ -1,5 +1,6 @@
 package org.konasl;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.hyperledger.fabric.contract.annotation.DataType;
@@ -107,6 +108,7 @@ public class DocumentContainer extends State {
     	if(data.length < 1) return null;
         ObjectMapper mapper = new ObjectMapper();
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         //System.out.println("Byte data is " + new String(data, UTF_8));
 
