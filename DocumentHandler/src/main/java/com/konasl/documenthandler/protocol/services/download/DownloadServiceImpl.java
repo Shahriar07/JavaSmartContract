@@ -124,14 +124,15 @@ public class DownloadServiceImpl implements DownloadService
             if (response.length > 0) {
                 String decodedString = new String(response, UTF_8);
                 if (documentHash.equalsIgnoreCase(decodedString)) {
-                    logger.info("verify duration : " + (System.currentTimeMillis()-startTime));
+                    logger.info("verify duration : " + (System.currentTimeMillis() - startTime));
                     return new RestResponse(ResponseCodeEnum.SUCCESS);
-                }
-                else {
-                    logger.error("verify duration : " + (System.currentTimeMillis()-startTime));
+                } else {
+                    logger.error("verify duration : " + (System.currentTimeMillis() - startTime));
                     return new RestResponse(ResponseCodeEnum.DOCUMENT_HASH_VERIFICATION_FAILED);
                 }
-
+            } else {
+                logger.info("verify duration : " + (System.currentTimeMillis()-startTime));
+                return new RestResponse(ResponseCodeEnum.DOCUMENT_NOT_EXIST);
             }
         } catch (Exception e) {
             e.printStackTrace();
