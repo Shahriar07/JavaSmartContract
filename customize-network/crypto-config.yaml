@@ -12,6 +12,7 @@ OrdererOrgs:
   # ---------------------------------------------------------------------------
   - Name: Orderer
     Domain: konai.com
+    #EnableNodeOUs: true
     # ---------------------------------------------------------------------------
     # "Specs" - See PeerOrgs below for complete description
     # ---------------------------------------------------------------------------
@@ -26,6 +27,7 @@ PeerOrgs:
   # ---------------------------------------------------------------------------
   - Name: OrgKona
     Domain: orgkona.konai.com
+    #EnableNodeOUs: true
     # ---------------------------------------------------------------------------
     # "Specs"
     # ---------------------------------------------------------------------------
@@ -45,6 +47,8 @@ PeerOrgs:
     Specs:
        - Hostname: kslpeer1 # implicitly "foo.org1.example.com"
          CommonName: kslpeer1.orgkona.konai.com # overrides Hostname-based FQDN set above
+       - Hostname: kslpeer2 # implicitly "foo.org1.example.com"
+         CommonName: kslpeer2.orgkona.konai.com # overrides Hostname-based FQDN set above
     #   - Hostname: bar
     #   - Hostname: baz
     # ---------------------------------------------------------------------------
@@ -60,7 +64,7 @@ PeerOrgs:
     # name collisions
     # ---------------------------------------------------------------------------
     #Template:
-    #  Count: 1
+    #  Count: 2
     #  Start: 1
     #  Hostname: {{kslpeer}}{{.Index}} # default
     # ---------------------------------------------------------------------------

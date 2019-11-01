@@ -43,6 +43,24 @@ Organizations:
             # encoded in the genesis block in the Application section context
             - Host: kslpeer1.orgkona.konai.com
               Port: 7051
+              
+    - &OrgVFA
+        # DefaultOrg defines the organization which is used in the sampleconfig
+        # of the fabric.git development environment
+        Name: OrgVFAMSP
+
+        # ID to load the MSP definition as
+        ID: OrgVFAMSP
+
+        MSPDir: crypto-config/peerOrganizations/orgvfa.vfas.com/msp
+
+        AnchorPeers:
+            # AnchorPeers defines the location of peers which can be used
+            # for cross org gossip communication.  Note, this value is only
+            # encoded in the genesis block in the Application section context
+            - Host: vfapeer1.orgvfa.vfas.com
+              Port: 9051
+
 
 ################################################################################
 #
@@ -122,10 +140,11 @@ Profiles:
             KonaConsortium:
                 Organizations:
                     - *OrgKona
+                    - *OrgVFA
     OneOrgChannel:
         Consortium: KonaConsortium
         Application:
             <<: *ApplicationDefaults
             Organizations:
                 - *OrgKona
-
+                - *OrgVFA

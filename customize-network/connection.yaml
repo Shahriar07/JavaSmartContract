@@ -14,20 +14,24 @@ channels:
         - konaorderer.konai.com
         peers:
             kslpeer1.orgkona.konai.com: {}
+            kslpeer2.orgkona.konai.com: {}
 organizations:
     orgkona:
         mspid: OrgKonaMSP
         peers:
         - kslpeer1.orgkona.konai.com
+        - kslpeer2.orgkona.konai.com
         certificateAuthorities:
         - ca.konai.com
 orderers:
     konaorderer.konai.com:
-        url: grpc://10.88.233.220:7050
+        url: grpc://localhost:7050
 peers:
     kslpeer1.orgkona.konai.com:
-        url: grpc://10.88.233.220:7051
+        url: grpc://localhost:7051
+    kslpeer2.orgkona.konai.com:
+        url: grpc://localhost:8051
 certificateAuthorities:
     ca.konai.com:
-        url: http://10.88.233.220:7054
+        url: http://ca.konai.com:7054
         caName: ca.konai.com
