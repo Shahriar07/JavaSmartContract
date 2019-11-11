@@ -45,8 +45,6 @@ PeerOrgs:
     Specs:
        - Hostname: mardpeer1 # implicitly "foo.org1.example.com"
          CommonName: mardpeer1.orgmard.mard.com # overrides Hostname-based FQDN set above
-
-
     #   - Hostname: bar
     #   - Hostname: baz
     # ---------------------------------------------------------------------------
@@ -62,7 +60,7 @@ PeerOrgs:
     # name collisions
     # ---------------------------------------------------------------------------
     #Template:
-    #  Count: 1
+    #  Count: 2
     #  Start: 1
     #  Hostname: {{kslpeer}}{{.Index}} # default
     # ---------------------------------------------------------------------------
@@ -80,4 +78,3 @@ PeerOrgs:
          CommonName: vfapeer1.orgvfa.vfas.com # overrides Hostname-based FQDN set above
     Users:
       Count: 1
-

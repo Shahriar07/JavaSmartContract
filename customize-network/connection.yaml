@@ -33,7 +33,6 @@ organizations:
         - vfapeer1.orgvfa.vfas.com
         certificateAuthorities:
         - ca.konai.com
-
 orderers:
     vfaorderer.orderer.com:
         url: grpc://localhost:7050

@@ -21,8 +21,6 @@ export FABRIC_START_TIMEOUT=10
 #echo ${FABRIC_START_TIMEOUT}
 sleep ${FABRIC_START_TIMEOUT}
 
-# Create the channel
-#docker exec -e "CORE_PEER_LOCALMSPID=OrgMardMSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@orgmard.mard.com/msp" mardpeer1.orgmard.mard.com peer channel create -o vfaorderer.orderer.com:7030 -c vfachannel -f /etc/hyperledger/configtx/channel.tx
 
 # Create the channel
 docker exec -e "CORE_PEER_LOCALMSPID=OrgVFAMSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@orgvfa.vfas.com/msp" -e "CORE_PEER_ADDRESS=vfapeer1.orgvfa.vfas.com:9051" vfapeer1.orgvfa.vfas.com peer channel create -o vfaorderer.orderer.com:7050 -c vfachannel -f /etc/hyperledger/configtx/channel.tx
