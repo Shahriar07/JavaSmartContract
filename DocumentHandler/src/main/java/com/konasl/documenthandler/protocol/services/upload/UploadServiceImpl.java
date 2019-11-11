@@ -191,10 +191,11 @@ public class UploadServiceImpl implements UploadService{
             //if (getFinishedUploadTask() == counter) break;
             //logger.info("Counter " + counter + " Finished " + finishedUploadTask);
         }
-        long endTime = System.currentTimeMillis();
-        logger.info(" Upload Duration " + (endTime-allStartTime) + " for chunks : " + counter);
+        long totalTime = System.currentTimeMillis() - allStartTime;
+
+        logger.info(" Upload Duration " + totalTime + " for chunks : " + counter);
         inputStream.close();
-        return new RestResponse(ResponseCodeEnum.SUCCESS, new UploadResponse(counter, fileHash));
+        return new RestResponse(ResponseCodeEnum.SUCCESS, new UploadResponse(chunkCount, fileHash, totalTime));
     }
 
     /**

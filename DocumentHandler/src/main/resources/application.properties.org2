@@ -1,0 +1,15 @@
+com.konasl.documenthandler.network_conf_path=../gateway/networkConnection_org2.yaml
+com.konasl.documenthandler.client_wallet_path=../identity/user/org2/wallet
+
+com.konasl.documenthandler.client_key_path=../customize-network/crypto-config/peerOrganizations/orgvfa.vfas.com/users/User1@orgvfa.vfas.com/msp
+com.konasl.documenthandler.cert_file_path=signcerts/User1@orgvfa.vfas.com-cert.pem
+com.konasl.documenthandler.client_key=keystore/89feaf2b986a22b95c3538e7dead98961af6ee15faaba968cdc9c83ba820d919_sk
+
+com.konasl.documenthandler.identityLabel=User1@orgvfa.vfas.com
+com.konasl.documenthandler.mspid=OrgVFAMSP
+com.konasl.documenthandler.channelname=konachannel
+
+com.konasl.documenthandler.max_thread=20
+com.konasl.documenthandler.upload_chunk_size=512
+server.port=9091
+

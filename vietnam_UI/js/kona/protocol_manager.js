@@ -65,16 +65,18 @@ ProtocolManager.prototype.uploadDocument = function(_file) {
         return;
     }
     window.console.log("Document Key " + docKey);
-	
+	that.showLoader();
 	that.sendDocumentToServer(_file, docKey, function(result) {
-        if (result !== null) {
-            window.console.log("Upload response " + result.status + " Message " + result.data );
-			alert("Document Upload " + result.message);
-        } else {
-            window.console.log("Error in operation sendDocumentToServer");
-			alert("Document Upload failed");
-        }
-    });
+		that.hideLoader();
+		if (result !== null) {
+			window.console.log("Upload response " + result.status + " Message " + JSON.stringify(result.data) );
+			that.showSuccessPopUp("Document Upload " + result.message + "\nFile Size : " + _file.size + " Bytes\nChunk Count : " + result.data.chunkCount + "\nUpload Time : " + (result.data.totalTime/1000) + " seconds");
+//				alert("Document Upload " + result.message + "\nChunk Count : " + result.data.chunkCount + "\nUpload Time : " + (result.data.totalTime/1000) + " seconds" );
+		} else {
+		    window.console.log("Error in operation sendDocumentToServer");
+			that.showErrorPopUp("Document Upload failed");
+		}
+    	});
 };
 
 
@@ -127,33 +129,35 @@ ProtocolManager.prototype.downloadDocument = function() {
 	
 	// Prepare the request array
 	var requestArray = this.paramObjCreator.createParamObj(docKey);
-	
+	that.showLoader();
 	sendPostRequestToServer(requestArray, serverBaseUrl, getDocumentNameAPI, function (response) {
-        if (response === null || response === "undefined") {
+		
+		if (response === null || response === "undefined") {
+			that.hideLoader();
 			window.console.error("sendDocumentToServer Error in response");
-			callback(response);
-            return;
-        }
+			that.showErrorPopUp("Document does not exist");
+			return;
+		}
 		// Document name received from the smart contract
 		if (response.status === RESPONSE_SUCCESS) {
 			console.log("Retrieved document name : " + response.data);
 			var requestArray = that.paramObjCreator.createParamObj(docKey);
 			requestArray[PARAM_FILE_NAME] =  docName;
     		downloadFromMockStorage(requestArray, response.data, function(result) {
+			that.hideLoader();
 				if (result !== null) {
-					window.console.log("download response " + result);
+					window.console.log("download success of " + result);
 				} else {
-					alert("Document download failed");
+					that.showErrorPopUp("Document download failed");
 					window.console.log("Error in operation download document");
 				}
 			});
 		} else {
-			alert("Document download failed : " + response.message );
+			that.hideLoader();
+			that.showErrorPopUp("Document download failed");
 			window.console.log("Error in operation download document " + response.message);
 		}
 	});
-
-	
 };
 
 /************************************* Download Protocol End ************************************/
@@ -170,36 +174,51 @@ ProtocolManager.prototype.verifyDocument = function(_file) {
     }
    // Get document Key
    var docKey = document.getElementById("verify-docKey").value;
-	
+	window.console.log("In verifyDocument " + docKey);
 	// Read the document content and generate document hash
     var reader = new FileReader();
     reader.onload = function(event) {
+        that.showLoader();
+        window.console.log(" doc size " + _file.size);
         var contentInBuffer = event.target.result;
         var array = new Uint8Array(contentInBuffer);
         window.console.log(" doc size " + array.length);
+
         const fileHash = generateHashOfFileContent(array);
         window.console.log('fileHash: ' + fileHash);
-	if(_file.name == null){alert("Select document to verify"); return;}
-	if(docKey == null) {alert("Input document key"); return;}
-	if(fileHash == null) {alert("Select document to verify"); return;}
+	if(_file.name === null){that.hideLoader();alert("Select a document to verify"); return;}
+	if(docKey === null || docKey ==="" ) {that.hideLoader();alert("Document key is empty"); return;}
+	if(fileHash == null) {that.hideLoader();alert("Select a document to verify"); return;}
         var requestArray = that.paramObjCreator.createParamObj(docKey);
-   requestArray[PARAM_FILE_NAME] =  _file.name;
-   requestArray[PARAM_FILE_HASH] =  fileHash;
-   
-   verifyFromMockStorage(requestArray, fileHash, function(result) {
-       if (result !== null) {
-           window.console.log("Verification response " + result.status + " message " + result.message);
-           alert("Document verification " + (result.status===RESPONSE_SUCCESS?"success":"failed"));
-       } else {
-           window.console.log("Error in operation download document");
-       }
-   });
+	   requestArray[PARAM_FILE_NAME] =  _file.name;
+	   requestArray[PARAM_FILE_HASH] =  fileHash;
+	   verifyFromMockStorage(requestArray, fileHash, function(result) {
+		that.hideLoader();
+	       if (result !== null) {
+			if(result.status===RESPONSE_SUCCESS) {
+			   that.showSuccessPopUp("Document verification success\n\n");
+			} else {
+			   that.showErrorPopUp("Document verification failed");
+			}
+
+		   window.console.log("Verification response " + result.status + " message " + result.message);
+		   //alert("Document verification " + (result.status===RESPONSE_SUCCESS?"success":"failed"));
+	       } else {
+		   window.console.log("Error in operation download document");
+		   that.showErrorPopUp("Document verification failed");
+	       }
+	   });
     };
     reader.readAsArrayBuffer(_file);
-  
 };
 
+ProtocolManager.prototype.showLoader = function() {
+	document.getElementById("loaderContainer").style.display='block';
+};
 
+ProtocolManager.prototype.hideLoader = function() {
+	document.getElementById("loaderContainer").style.display='none';
+};
 
 /**
  * Binds buttons click event to upload and download document
@@ -207,6 +226,7 @@ ProtocolManager.prototype.verifyDocument = function(_file) {
 
 ProtocolManager.prototype.bindButtons = function() {
     var that = this;
+    that.resetInputFields();
     //-------------------------------------
     // FileSelect for upload
     document.getElementById('upload-file').addEventListener('change', function(evt) {
@@ -219,7 +239,7 @@ ProtocolManager.prototype.bindButtons = function() {
 			uploadDocNameInput.value = fileName;
 		}
 		else {
-			window.console.log("File not selected ");
+			window.console.log("File not selected");
 			uploadDocNameInput.value = "";
 		}
     }, false);
@@ -235,7 +255,7 @@ ProtocolManager.prototype.bindButtons = function() {
 			docNameInput.value = fileName;
 		}
 		else {
-			window.console.log("File not selected ");
+			window.console.log("File not selected");
 			docNameInput.value = "";
 		}
     }, false);
@@ -251,23 +271,61 @@ ProtocolManager.prototype.bindButtons = function() {
     });
 
     document.getElementById("request-verify").addEventListener("click", function() {
+        if(that.uploadDocInfo.verifyFiles[0] == null) alert("Select a document");
         that.verifyDocument(that.uploadDocInfo.verifyFiles[0]);
     });
 	
 	
-	document.getElementById("custom-upload-btn").addEventListener("click", function() {
+    document.getElementById("custom-upload-btn").addEventListener("click", function() {
 		console.log("custom-upload button clicked");
 		document.getElementById("upload-file").click();
     });
 
-	document.getElementById("custom-verify-btn").addEventListener("click", function() {
+    document.getElementById("custom-verify-btn").addEventListener("click", function() {
 		console.log("custom-verify button clicked");
 		document.getElementById("verify-file").click();
-    });	
-	
+    });
+
+    document.getElementById("popup-button").addEventListener("click", function() {
+        that.popupContainer.style.display = "none"
+    });
+};
+
+
+ProtocolManager.prototype.showSuccessPopUp = function(message) {
+    console.log("Popup success.");
+    this.popupContainer.style.display = "block";
+    this.popupImage.src = "./resources/img_success.png";
+    this.popupLabelResult.innerText = 'SUCCESS';
+    this.popupLabelMsg.innerText = message;
+};
+
+ProtocolManager.prototype.showErrorPopUp = function(message) {
+    console.log("Popup failed.");
+    this.popupContainer.style.display = "block";
+    this.popupImage.src = "./resources/img_error.png";
+    this.popupLabelResult.innerText = 'ERROR';
+    this.popupLabelMsg.innerText = message;
+};
+
+ProtocolManager.prototype.resetInputFields = function() {
+    document.getElementById('verify-document-name').value = "";
+    document.getElementById('upload-document-name').value = "";
+    document.getElementById("docKey").value = Math.floor(Math.random() * 100000) ;
+    document.getElementById("verify-docKey").value = "";
+    document.getElementById("download-docKey").value = "";
+    document.getElementById("download-docName").value = "";
 };
 
 ProtocolManager.prototype.onReady = function() {
+    
+    console.log("Onload");
+    this.popupContainer = document.getElementById("popup-container");
+    this.redeemButton = document.getElementById("redeem-button");
+    this.popupButton = document.getElementById("popup-button");
+    this.popupImage = document.getElementById("popup-img");
+    this.popupLabelResult = document.getElementById("popup-label-result");
+    this.popupLabelMsg = document.getElementById("popup-label-msg");
     this.bindButtons();
 };
 
@@ -278,5 +336,5 @@ $(document).ready(function() {
 
     window.setTimeout(function() {
         protocolManager.onReady();
-    }, 3000);
+    }, 500);
 });

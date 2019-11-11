@@ -14,6 +14,7 @@ function downloadFromMockStorage(requestArray, fileName, callback) {
 				callback(null);
 		    return;
 		} else {
+			callback(fileName);
 			window.console.log(response);
 			saveDocumentFromBrowser(response.data, fileName);
 		    //  generateHash(response.data, function(generatedHash) {

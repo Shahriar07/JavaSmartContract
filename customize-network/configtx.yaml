@@ -19,30 +19,49 @@ Organizations:
     - &OrdererOrg
         # DefaultOrg defines the organization which is used in the sampleconfig
         # of the fabric.git development environment
-        Name: KonaOrdererOrg
+        Name: OrdererOrg
 
         # ID to load the MSP definition as
-        ID: KonaOrdererMSP
+        ID: OrdererMSP
 
         # MSPDir is the filesystem path which contains the MSP configuration
-        MSPDir: crypto-config/ordererOrganizations/konai.com/msp
+        MSPDir: crypto-config/ordererOrganizations/orderer.com/msp
 
-    - &OrgKona
+
+    - &OrgMARD
         # DefaultOrg defines the organization which is used in the sampleconfig
         # of the fabric.git development environment
-        Name: OrgKonaMSP
+        Name: OrgMardMSP
 
         # ID to load the MSP definition as
-        ID: OrgKonaMSP
+        ID: OrgMardMSP
 
-        MSPDir: crypto-config/peerOrganizations/orgkona.konai.com/msp
+        MSPDir: crypto-config/peerOrganizations/orgmard.mard.com/msp
 
         AnchorPeers:
             # AnchorPeers defines the location of peers which can be used
             # for cross org gossip communication.  Note, this value is only
             # encoded in the genesis block in the Application section context
-            - Host: kslpeer1.orgkona.konai.com
-              Port: 7051
+            - Host: mardpeer1.orgmard.mard.com
+              Port: 5051
+
+    - &OrgVFA
+        # DefaultOrg defines the organization which is used in the sampleconfig
+        # of the fabric.git development environment
+        Name: OrgVFAMSP
+
+        # ID to load the MSP definition as
+        ID: OrgVFAMSP
+
+        MSPDir: crypto-config/peerOrganizations/orgvfa.vfas.com/msp
+
+        AnchorPeers:
+            # AnchorPeers defines the location of peers which can be used
+            # for cross org gossip communication.  Note, this value is only
+            # encoded in the genesis block in the Application section context
+            - Host: vfapeer1.orgvfa.vfas.com
+              Port: 9051
+
 
 ################################################################################
 #
@@ -73,16 +92,16 @@ Orderer: &OrdererDefaults
     OrdererType: solo
 
     Addresses:
-        - konaorderer.konai.com:7050
+        - vfaorderer.orderer.com:7050
 
     # Batch Timeout: The amount of time to wait before creating a batch
-    BatchTimeout: 30ms
+    BatchTimeout: 10ms
 
     # Batch Size: Controls the number of messages batched into a block
     BatchSize:
 
         # Max Message Count: The maximum number of messages to permit in a batch
-        MaxMessageCount: 20
+        MaxMessageCount: 2
 
         # Absolute Max Bytes: The absolute maximum number of bytes allowed for
         # the serialized messages in a batch.
@@ -119,13 +138,15 @@ Profiles:
             Organizations:
                 - *OrdererOrg
         Consortiums:
-            KonaConsortium:
+            VfaConsortium:
                 Organizations:
-                    - *OrgKona
+                    - *OrgMARD
+                    - *OrgVFA
     OneOrgChannel:
-        Consortium: KonaConsortium
+        Consortium: VfaConsortium
         Application:
             <<: *ApplicationDefaults
             Organizations:
-                - *OrgKona
+                - *OrgMARD
+                - *OrgVFA
 

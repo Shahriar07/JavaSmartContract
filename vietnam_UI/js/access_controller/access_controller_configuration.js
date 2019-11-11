@@ -6,8 +6,9 @@
 "use strict";
 
 // Server URL
-var serverBaseUrl = "http://10.88.233.118:9090";
+//var serverBaseUrl = "http://10.88.233.118:9090";
 //var serverBaseUrl = "http://103.23.42.218:9090";
+var serverBaseUrl = "http://localhost:9099";
 
 // Upload APIs
 var uploadDocumentAPI = "/api/document/upload";

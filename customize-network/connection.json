@@ -1,32 +1,51 @@
 {
-    "name": "kona-network",
+    "name": "vfa-network",
     "version": "1.0.0",
     "client": {
-        "organization": "OrgKona",
+        "organization": "OrgVFA",
         "connection": {
             "timeout": {
                 "peer": {
-                    "endorser": "300"
+                    "endorser": "600"
                 },
-                "orderer": "300"
+                "orderer": "600"
             }
         }
     },
     "channels": {
-        "konachannel": {
+        "vfachannel": {
             "orderers": [
-                "konaorderer.konai.com"
+                "vfaorderer.orderer.com"
             ],
             "peers": {
-                "kslpeer1.orgkona.konai.com": {}
+                "mardpeer1.orgmard.mard.com": {},
+		"vfapeer1.orgvfa.vfas.com": {}
+            }
+        },
+	"docchannel": {
+            "orderers": [
+                "vfaorderer.orderer.com"
+            ],
+            "peers": {
+                "mardpeer1.orgmard.mard.com": {},
+		"vfapeer1.orgvfa.vfas.com": {}
             }
         }
     },
     "organizations": {
-        "OrgKona": {
-            "mspid": "OrgKonaMSP",
+        "OrgMARD": {
+            "mspid": "OrgMardMSP",
             "peers": [
-                "kslpeer1.orgkona.konai.com"
+                "mardpeer1.orgmard.mard.com"
+            ],
+            "certificateAuthorities": [
+                "ca.konai.com"
+            ]
+        },
+	"OrgVFA": {
+            "mspid": "OrgVFAMSP",
+            "peers": [
+                "vfapeer1.orgvfa.vfas.com"
             ],
             "certificateAuthorities": [
                 "ca.konai.com"
@@ -34,18 +53,21 @@
         }
     },
     "orderers": {
-        "konaorderer.konai.com": {
-            "url": "grpc://10.88.233.220:7050"
+        "vfaorderer.orderer.com": {
+            "url": "grpc://localhost:7050"
         }
     },
     "peers": {
-        "kslpeer1.orgkona.konai.com": {
-            "url": "grpc://10.88.233.220:7051"
+        "mardpeer1.orgmard.mard.com": {
+            "url": "grpc://localhost:5051"
+        },
+	"vfapeer1.orgvfa.vfas.com": {
+            "url": "grpc://localhost:9051"
         }
     },
     "certificateAuthorities": {
         "ca.konai.com": {
-            "url": "http://10.88.233.220:7054",
+            "url": "http://ca.konai.com:7054",
             "caName": "ca.konai.com"
         }
     }

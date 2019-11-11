@@ -14,4 +14,4 @@ docker ps -a
 
 
 # Instantiate the smart to store document
-docker exec -e "CORE_PEER_LOCALMSPID=OrgKonaMSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@orgkona.konai.com/msp" kslpeer1.orgkona.konai.com peer chaincode instantiate -n documenthandler -v 1.0 -l java -c '{"Args":["org.konasl.documentcontainer:instantiate"]}' -C konachannel -P "AND ('OrgKonaMSP.member')"
+docker exec -e "CORE_PEER_LOCALMSPID=OrgVFAMSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@orgvfa.vfas.com/msp" -e "CORE_PEER_ADDRESS=vfapeer1.orgvfa.vfas.com:9051"  vfapeer1.orgvfa.vfas.com peer chaincode instantiate -n documenthandler -v 1.0 -l java -c '{"Args":["org.konasl.documentcontainer:instantiate"]}' -C vfachannel -P "AND ('OrgMardMSP.member', 'OrgVFAMSP.member')"

@@ -18,7 +18,7 @@ public enum ResponseCodeEnum {
     BLOCKCHAIN_NETWORK_CONNECTION_FAILED        ("0003", "Blockchain network connection failed"),
     UPLOAD_TOKEN_GENERATION_FAILED              ("0004", "Upload token generation failed"),
     DOCUMENT_HASH_VERIFICATION_FAILED           ("0005", "Document hash verification failed"),
-    DOCUMENT_NOT_EXIST                          ("0006", "Document not exist"),
+    DOCUMENT_NOT_EXIST                          ("0006", "Document does not exist"),
     BLOCK_INFO_GENERATION_FAILED                ("0007", "Block information parsing failed");
 
     private final String code;

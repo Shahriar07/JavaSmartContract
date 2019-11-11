@@ -12,7 +12,7 @@ export MSYS_NO_PATHCONV=1
 
 docker-compose -f docker-compose.yml down
 
-docker-compose -f docker-compose.yml up -d ca.konai.com konaorderer.konai.com kslpeer1.orgkona.konai.com couchdb
+docker-compose -f docker-compose.yml up -d ca.konai.com vfaorderer.orderer.com mardpeer1.orgmard.mard.com vfapeer1.orgvfa.vfas.com couchdb
 docker ps -a
 
 # wait for Hyperledger Fabric to start
@@ -22,6 +22,21 @@ export FABRIC_START_TIMEOUT=10
 sleep ${FABRIC_START_TIMEOUT}
 
 # Create the channel
-docker exec -e "CORE_PEER_LOCALMSPID=OrgKonaMSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@orgkona.konai.com/msp" kslpeer1.orgkona.konai.com peer channel create -o konaorderer.konai.com:7050 -c konachannel -f /etc/hyperledger/configtx/channel.tx
-# Join peer0.org1.example.com to the channel.
-docker exec -e "CORE_PEER_LOCALMSPID=OrgKonaMSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@orgkona.konai.com/msp" kslpeer1.orgkona.konai.com peer channel join -b konachannel.block
+#docker exec -e "CORE_PEER_LOCALMSPID=OrgMardMSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@orgmard.mard.com/msp" mardpeer1.orgmard.mard.com peer channel create -o vfaorderer.orderer.com:7030 -c vfachannel -f /etc/hyperledger/configtx/channel.tx
+
+# Create the channel
+docker exec -e "CORE_PEER_LOCALMSPID=OrgVFAMSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@orgvfa.vfas.com/msp" -e "CORE_PEER_ADDRESS=vfapeer1.orgvfa.vfas.com:9051" vfapeer1.orgvfa.vfas.com peer channel create -o vfaorderer.orderer.com:7050 -c vfachannel -f /etc/hyperledger/configtx/channel.tx
+
+# Join vfapeer1.orgvfa.vfas.com to the channel.
+docker exec -e "CORE_PEER_LOCALMSPID=OrgVFAMSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@orgvfa.vfas.com/msp" -e "CORE_PEER_ADDRESS=vfapeer1.orgvfa.vfas.com:9051" vfapeer1.orgvfa.vfas.com peer channel join -b vfachannel.block -o vfaorderer.orderer.com:7050
+
+docker exec -e "CORE_PEER_LOCALMSPID=OrgMardMSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@orgmard.mard.com/msp" -e "CORE_PEER_ADDRESS=mardpeer1.orgmard.mard.com:5051" mardpeer1.orgmard.mard.com peer channel fetch 0 vfachannel.block -c vfachannel -o vfaorderer.orderer.com:7050
+
+# Join kslpeer1.orgkona.konai.com to the channel.
+docker exec -e "CORE_PEER_LOCALMSPID=OrgMardMSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@orgmard.mard.com/msp" -e "CORE_PEER_ADDRESS=mardpeer1.orgmard.mard.com:5051" mardpeer1.orgmard.mard.com peer channel join -b vfachannel.block -o vfaorderer.orderer.com:7050
+
+
+#docker exec -e "CORE_PEER_LOCALMSPID=OrgVFAMSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@orgvfa.vfas.com/msp" -e "CORE_PEER_ADDRESS=vfapeer1.orgvfa.vfas.com:9051" vfapeer1.orgvfa.vfas.com peer channel fetch 0 vfachannel.block -c vfachannel -o vfaorderer.orderer.com:7030
+
+# Join vfapeer1.orgvfa.vfas.com to the channel.
+#docker exec -e "CORE_PEER_LOCALMSPID=OrgVFAMSP" -e "CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@orgvfa.vfas.com/msp" -e "CORE_PEER_ADDRESS=vfapeer1.orgvfa.vfas.com:9051" vfapeer1.orgvfa.vfas.com peer channel join -b vfachannel.block -o vfaorderer.orderer.com:7030

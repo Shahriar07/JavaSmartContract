@@ -6,7 +6,7 @@
 #
 export PATH=$GOPATH/src/github.com/hyperledger/fabric/build/bin:${PWD}/../bin:${PWD}:$PATH
 export FABRIC_CFG_PATH=${PWD}
-CHANNEL_NAME=konachannel
+CHANNEL_NAME=vfachannel
 
 # remove previous crypto material and config transactions
 rm -fr config/*
@@ -34,7 +34,7 @@ if [ "$?" -ne 0 ]; then
 fi
 
 # generate anchor peer transaction
-configtxgen -profile OneOrgChannel -outputAnchorPeersUpdate ./config/OrgKonaMSPanchors.tx -channelID $CHANNEL_NAME -asOrg OrgKonaMSP
+configtxgen -profile OneOrgChannel -outputAnchorPeersUpdate ./config/OrgKonaMSPanchors.tx -channelID $CHANNEL_NAME -asOrg OrgVFAMSP
 if [ "$?" -ne 0 ]; then
   echo "Failed to generate anchor peer update for OrgKonaMSP..."
   exit 1

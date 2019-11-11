@@ -86,6 +86,14 @@ function sendRequestToServer( requestArray, baseUrl, api, type, callback) {
 					callback({status : responseObject.responseCode, message: responseObject.responseMessage, data : responseObject.data});
         }
     };
+    request.onerror = function() {
+        if (request.status != HTTP_OK) {
+            window.console.log("Server error " + request.status);
+			if (isTypeCallback(callback))
+				callback(null);
+            return;
+        }
+    };		
 }
 
 function sendRequestToServerForFileDownload( requestArray, baseUrl, api, type, callback) {
@@ -134,6 +142,14 @@ function sendRequestToServerForFileDownload( requestArray, baseUrl, api, type, c
 		 if (isTypeCallback(callback))
 		 callback({data : request.response, type:  request.responseType, length: sizeOfObject});
     };
+    request.onerror = function() {
+        if (request.status != HTTP_OK) {
+            window.console.log("Server error " + request.status);
+			if (isTypeCallback(callback))
+				callback(null);
+            return;
+        }
+    };	
 }
 
 function  processGetRequest(requestArray) {

@@ -4,7 +4,7 @@
 # blockchain network that are necessary for the applications to interact with it. These are all
 # knowledge that must be acquired from out-of-band sources. This file provides such a source.
 #
-name: "basic-network"
+name: "vfa-network"
 
 #
 # Any properties with an "x-" prefix will be treated as application-specific, exactly like how naming
@@ -19,7 +19,7 @@ x-type: "hlfv1"
 #
 # Describe what the target network is/does.
 #
-description: "The basic network"
+description: "The VFA network"
 
 #
 # Schema version of the content. Used by the SDK to apply the corresponding parsing rules.
@@ -27,7 +27,7 @@ description: "The basic network"
 version: "1.0"
 
 client:
-  organization: OrgKona
+  organization: OrgVFA
 
 #
 # [Optional]. But most apps would have this section so that channel objects can be constructed
@@ -36,17 +36,37 @@ client:
 #
 channels:
   # name of the channel
-  konachannel:
+  vfachannel:
     # Required. list of orderers designated by the application to use for transactions on this
     # channel. This list can be a result of access control ("org1" can only access "ordererA"), or
     # operational decisions to share loads from applications among the orderers.  The values must
     # be "names" of orgs defined under "organizations/peers"
     orderers:
-      - konaorderer.konai.com
+      - vfaorderer.orderer.com
 
     # Required. list of peers from participating orgs
     peers:
-      kslpeer1.orgkona.konai.com:
+      mardpeer1.orgmard.mard.com:
+        # [Optional]. will this peer be sent transaction proposals for endorsement? The peer must
+        # have the chaincode installed. The app can also use this property to decide which peers
+        # to send the chaincode install request. Default: true
+        endorsingPeer: true
+
+        # [Optional]. will this peer be sent query proposals? The peer must have the chaincode
+        # installed. The app can also use this property to decide which peers to send the
+        # chaincode install request. Default: true
+        chaincodeQuery: true
+
+        # [Optional]. will this peer be sent query proposals that do not require chaincodes, like
+        # queryBlock(), queryTransaction(), etc. Default: true
+        ledgerQuery: true
+
+        # [Optional]. will this peer be the target of the SDK's listener registration? All peers can
+        # produce events but the app typically only needs to connect to one to listen to events.
+        # Default: true
+        eventSource: true
+
+      vfapeer1.orgvfa.vfas.com:
         # [Optional]. will this peer be sent transaction proposals for endorsement? The peer must
         # have the chaincode installed. The app can also use this property to decide which peers
         # to send the chaincode install request. Default: true
@@ -70,19 +90,18 @@ channels:
 # list of participating organizations in this network
 #
 organizations:
-  OrgKona:
-    mspid: OrgKonaMSP
-
-    peers:
-      - kslpeer1.orgkona.konai.com
-
-    # [Optional]. Certificate Authorities issue certificates for identification purposes in a Fabric based
-    # network. Typically certificates provisioning is done in a separate process outside of the
-    # runtime network. Fabric-CA is a special certificate authority that provides a REST APIs for
-    # dynamic certificate management (enroll, revoke, re-enroll). The following section is only for
-    # Fabric-CA servers.
-    certificateAuthorities:
-      - ca-orgkona
+    OrgMARD:
+        mspid: OrgMardMSP
+        peers:
+        - mardpeer1.orgmard.mard.com
+        certificateAuthorities:
+        - ca-orgkona
+    OrgVFA:
+        mspid: OrgVFAMSP
+        peers:
+        - vfapeer1.orgvfa.vfas.com
+        certificateAuthorities:
+        - ca-orgkona
 
 #
 # List of orderers to send transaction and channel create/update requests to. For the time
@@ -90,26 +109,35 @@ organizations:
 # SDK is implementation specific. Consult each SDK's documentation for its handling of orderers.
 #
 orderers:
-  konaorderer.konai.com:
-    url: grpc://10.88.233.220:7050
+  vfaorderer.orderer.com:
+    url: grpc://localhost:7050
 
     # these are standard properties defined by the gRPC library
     # they will be passed in as-is to gRPC client constructor
     grpcOptions:
-      ssl-target-name-override: konaorderer.konai.com
+      ssl-target-name-override: vfaorderer.orderer.com
 
 #
 # List of peers to send various requests to, including endorsement, query
 # and event listener registration.
 #
 peers:
-  kslpeer1.orgkona.konai.com:
+  mardpeer1.orgmard.mard.com:
     # this URL is used to send endorsement and query requests
-    url: grpc://10.88.233.220:7051
+    url: grpc://localhost:5051
 
     grpcOptions:
-      ssl-target-name-override: kslpeer1.orgkona.konai.com
+      ssl-target-name-override: mardpeer1.orgmard.mard.com
       request-timeout: 120001
+
+  vfapeer1.orgvfa.vfas.com:
+    # this URL is used to send endorsement and query requests
+    url: grpc://localhost:9051
+
+    grpcOptions:
+      ssl-target-name-override: vfapeer1.orgvfa.vfas.com
+      request-timeout: 120001
+
 
 # Fabric-CA is a special kind of Certificate Authority provided by Hyperledger Fabric which allows
 # certificate management to be done via REST APIs. Application may choose to use a standard
@@ -117,7 +145,7 @@ peers:
 #
 certificateAuthorities:
   ca-orgkona:
-    url: http://10.88.233.220:7054
+    url: http://localhost:7054
     # the properties specified under this object are passed to the 'http' client verbatim when
     # making the request to the Fabric-CA server
     httpOptions:

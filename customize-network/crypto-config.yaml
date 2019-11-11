@@ -11,12 +11,12 @@ OrdererOrgs:
   # Orderer
   # ---------------------------------------------------------------------------
   - Name: Orderer
-    Domain: konai.com
+    Domain: orderer.com
     # ---------------------------------------------------------------------------
     # "Specs" - See PeerOrgs below for complete description
     # ---------------------------------------------------------------------------
     Specs:
-      - Hostname: konaorderer
+      - Hostname: vfaorderer
 # ---------------------------------------------------------------------------
 # "PeerOrgs" - Definition of organizations managing peer nodes
 # ---------------------------------------------------------------------------
@@ -24,8 +24,8 @@ PeerOrgs:
   # ---------------------------------------------------------------------------
   # Org1
   # ---------------------------------------------------------------------------
-  - Name: OrgKona
-    Domain: orgkona.konai.com
+  - Name: OrgMARD
+    Domain: orgmard.mard.com
     # ---------------------------------------------------------------------------
     # "Specs"
     # ---------------------------------------------------------------------------
@@ -43,8 +43,10 @@ PeerOrgs:
     #                 Org.Domain, respectively.
     # ---------------------------------------------------------------------------
     Specs:
-       - Hostname: kslpeer1 # implicitly "foo.org1.example.com"
-         CommonName: kslpeer1.orgkona.konai.com # overrides Hostname-based FQDN set above
+       - Hostname: mardpeer1 # implicitly "foo.org1.example.com"
+         CommonName: mardpeer1.orgmard.mard.com # overrides Hostname-based FQDN set above
+
+
     #   - Hostname: bar
     #   - Hostname: baz
     # ---------------------------------------------------------------------------
@@ -70,3 +72,12 @@ PeerOrgs:
     # ---------------------------------------------------------------------------
     Users:
       Count: 1
+
+  - Name: OrgVFA
+    Domain: orgvfa.vfas.com
+    Specs:
+       - Hostname: vfapeer1 # implicitly "foo.org1.example.com"
+         CommonName: vfapeer1.orgvfa.vfas.com # overrides Hostname-based FQDN set above
+    Users:
+      Count: 1
+

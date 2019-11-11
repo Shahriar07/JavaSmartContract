@@ -64,7 +64,7 @@ BlockExplorer.prototype.getLastBlockInfo = function(that, blockInfo) {
 BlockExplorer.prototype.renderBlockInfo = function(that, blockInfo) {
 	if(blockInfo === null || blockInfo === undefined) {
 		console.log("BlockInfo null");	
-		alert("Block information not found");
+		that.showErrorPopUp("Block information not found");
 		return;
 	}
 	console.log("BlockInfo " + JSON.stringify(blockInfo));
@@ -94,7 +94,7 @@ BlockExplorer.prototype.renderBlockInfo = function(that, blockInfo) {
 	nonce.innerHTML = blockInfo.nonce;
 
 	const transactionStatus = document.getElementById("transaction-status");
-	transactionStatus.innerHTML = blockInfo.txStatus;
+	transactionStatus.innerHTML = (blockInfo.txStatus == "200")?"Success (200)":"Failed (" + blockInfo.txStatus + ")";
 
 	const endorsementCount = document.getElementById("endorsement-count");
 	endorsementCount.innerHTML = blockInfo.endorsementCount;
@@ -178,11 +178,40 @@ BlockExplorer.prototype.bindButtons = function() {
 	document.getElementById("next-block-search").addEventListener("click", function(){
 		that.searchNextBlock();
 	});
+
+	document.getElementById("popup-button").addEventListener("click", function() {
+		that.popupContainer.style.display = "none"
+	});
+
 };
 
 BlockExplorer.prototype.onReady = function() {
+    console.log("Onload");
+    this.popupContainer = document.getElementById("popup-container");
+    this.redeemButton = document.getElementById("redeem-button");
+    this.popupButton = document.getElementById("popup-button");
+    this.popupImage = document.getElementById("popup-img");
+    this.popupLabelResult = document.getElementById("popup-label-result");
+    this.popupLabelMsg = document.getElementById("popup-label-msg");
     this.bindButtons();
 };
+
+BlockExplorer.prototype.showSuccessPopUp = function(message) {
+    console.log("Popup success.");
+    this.popupContainer.style.display = "block";
+    this.popupImage.src = "./resources/img_success.png";
+    this.popupLabelResult.innerText = 'SUCCESS';
+    this.popupLabelMsg.innerText = message;
+};
+
+BlockExplorer.prototype.showErrorPopUp = function(message) {
+    console.log("Popup failed.");
+    this.popupContainer.style.display = "block";
+    this.popupImage.src = "./resources/img_error.png";
+    this.popupLabelResult.innerText = 'ERROR';
+    this.popupLabelMsg.innerText = message;
+};
+
 
 var blockExplorer = new BlockExplorer(); 
 
@@ -191,5 +220,5 @@ $(document).ready(function() {
 
     window.setTimeout(function() {
         blockExplorer.onReady();
-    }, 1000);
+    }, 500);
 });

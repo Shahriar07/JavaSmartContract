@@ -6,7 +6,7 @@
 version: '2'
 
 networks:
-  basic:
+  vfa-network:
 
 services:
   ca.konai.com:
@@ -15,25 +15,25 @@ services:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
       - FABRIC_CA_SERVER_CA_NAME=ca.konai.com
       - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.orgkona.konai.com-cert.pem
-      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/63bc1f758da47b9f64e47646542f80734d51ec7ae574ea2aa4a48a9bb7c66c91_sk
+      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/8e881c8791921483ab0f7980c11d5bb76d2083e9f009532b16a81d758ad20fc5_sk
     ports:
       - "7054:7054"
     command: sh -c 'fabric-ca-server start -b admin:adminpw'
     volumes:
-      - ./crypto-config/peerOrganizations/orgkona.konai.com/ca/:/etc/hyperledger/fabric-ca-server-config
+      - ./crypto-config/peerOrganizations/orgvfa.vfas.com/ca/:/etc/hyperledger/fabric-ca-server-config
     container_name: ca.konai.com
     networks:
-      - basic
+      - vfa-network
 
-  konaorderer.konai.com:
-    container_name: konaorderer.konai.com
+  vfaorderer.orderer.com:
+    container_name: vfaorderer.orderer.com
     image: hyperledger/fabric-orderer
     environment:
-      - FABRIC_LOGGING_SPEC=info
+      - FABRIC_LOGGING_SPEC=debug
       - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
       - ORDERER_GENERAL_GENESISMETHOD=file
       - ORDERER_GENERAL_GENESISFILE=/etc/hyperledger/configtx/genesis.block
-      - ORDERER_GENERAL_LOCALMSPID=KonaOrdererMSP
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
       - ORDERER_GENERAL_LOCALMSPDIR=/etc/hyperledger/msp/orderer/msp
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/orderer
     command: orderer
@@ -41,27 +41,33 @@ services:
       - 7050:7050
     volumes:
         - ./config/:/etc/hyperledger/configtx
-        - ./crypto-config/ordererOrganizations/konai.com/orderers/konaorderer.konai.com/:/etc/hyperledger/msp/orderer
-        - ./crypto-config/peerOrganizations/orgkona.konai.com/peers/kslpeer1.orgkona.konai.com/:/etc/hyperledger/msp/peerOrgKona
+        - ./crypto-config/ordererOrganizations/orderer.com/orderers/vfaorderer.orderer.com/:/etc/hyperledger/msp/orderer
+        - ./crypto-config/peerOrganizations/orgmard.mard.com/peers/mardpeer1.orgmard.mard.com/:/etc/hyperledger/msp/peer1
+        - ./crypto-config/peerOrganizations/orgvfa.vfas.com/peers/vfapeer1.orgvfa.vfas.com/:/etc/hyperledger/msp/peer3
         - ../SmartContract:/etc/hyperledger/contracts
     networks:
-      - basic
+      - vfa-network
 
-  kslpeer1.orgkona.konai.com:
-    container_name: kslpeer1.orgkona.konai.com
+  vfapeer1.orgvfa.vfas.com:
+    container_name: vfapeer1.orgvfa.vfas.com
     image: hyperledger/fabric-peer
     environment:
       - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
-      - CORE_PEER_ID=kslpeer1.orgkona.konai.com
+      - CORE_PEER_ID=vfapeer1.orgvfa.vfas.com
       - FABRIC_LOGGING_SPEC=info
       - CORE_CHAINCODE_LOGGING_LEVEL=info
-      - CORE_PEER_LOCALMSPID=OrgKonaMSP
+      - CORE_PEER_LOCALMSPID=OrgVFAMSP
       - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/peer/
-      - CORE_PEER_ADDRESS=kslpeer1.orgkona.konai.com:7051
+      - CORE_PEER_ADDRESS=vfapeer1.orgvfa.vfas.com:9051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:9051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=vfapeer1.orgvfa.vfas.com:9051
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      - CORE_PEER_PROFILE_ENABLED=true
       # # the following setting starts chaincode containers on the same
       # # bridge network as the peers
       # # https://docs.docker.com/compose/networking/
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_basic
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_vfa-network
       - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
       - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb:5984
       # The CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME and CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD
@@ -71,21 +77,66 @@ services:
       - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric
     command: peer node start
-    # command: peer node start --peer-chaincodedev=true
+    #command: peer node start --peer-chaincodedev=true
     ports:
-      - 7051:7051
-      - 7053:7053
+      - 9051:9051
+      - 9053:9053
     volumes:
         - /var/run/:/host/var/run/
-        - ./crypto-config/peerOrganizations/orgkona.konai.com/peers/kslpeer1.orgkona.konai.com/msp:/etc/hyperledger/msp/peer
-        - ./crypto-config/peerOrganizations/orgkona.konai.com/users:/etc/hyperledger/msp/users
+        - ./crypto-config/peerOrganizations/orgvfa.vfas.com/peers/vfapeer1.orgvfa.vfas.com/msp:/etc/hyperledger/msp/peer
+        - ./crypto-config/peerOrganizations/orgvfa.vfas.com/users:/etc/hyperledger/msp/users
         - ./config:/etc/hyperledger/configtx
         - ../SmartContract:/etc/hyperledger/contracts
     depends_on:
-      - konaorderer.konai.com
+      - vfaorderer.orderer.com
       - couchdb
     networks:
-      - basic
+      - vfa-network
+
+  mardpeer1.orgmard.mard.com:
+    container_name: mardpeer1.orgmard.mard.com
+    image: hyperledger/fabric-peer
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_PEER_ID=mardpeer1.orgmard.mard.com
+      - FABRIC_LOGGING_SPEC=debug
+      - CORE_CHAINCODE_LOGGING_LEVEL=info
+      - CORE_PEER_LOCALMSPID=OrgMardMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/peer/
+      - CORE_PEER_ADDRESS=mardpeer1.orgmard.mard.com:5051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:5051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=mardpeer1.orgmard.mard.com:5051
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      - CORE_PEER_PROFILE_ENABLED=true
+      # # the following setting starts chaincode containers on the same
+      # # bridge network as the peers
+      # # https://docs.docker.com/compose/networking/
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_vfa-network
+      - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb:5984
+      # The CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME and CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD
+      # provide the credentials for ledger to connect to CouchDB.  The username and password must
+      # match the username and password set for the associated CouchDB.
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME=
+      - CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD=
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: peer node start
+    #command: peer node start --peer-chaincodedev=true
+    ports:
+      - 5051:5051
+      - 5053:5053
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./crypto-config/peerOrganizations/orgmard.mard.com/peers/mardpeer1.orgmard.mard.com/msp:/etc/hyperledger/msp/peer
+        - ./crypto-config/peerOrganizations/orgmard.mard.com/users:/etc/hyperledger/msp/users
+        - ./config:/etc/hyperledger/configtx
+        - ../SmartContract:/etc/hyperledger/contracts
+    depends_on:
+      - vfaorderer.orderer.com
+      - couchdb
+    networks:
+      - vfa-network
 
   couchdb:
     container_name: couchdb
@@ -98,7 +149,7 @@ services:
     ports:
       - 5984:5984
     networks:
-      - basic
+      - vfa-network
 
   cli:
     container_name: cli
@@ -109,9 +160,9 @@ services:
       - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
       - FABRIC_LOGGING_SPEC=info
       - CORE_PEER_ID=cli
-      - CORE_PEER_ADDRESS=kslpeer1.orgkona.konai.com:7051
-      - CORE_PEER_LOCALMSPID=OrgKonaMSP
-      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/kslpeer1.orgkona.konai.com/users/Admin@orgkona.konai.com/msp
+      - CORE_PEER_ADDRESS=mardpeer1.orgmard.mard.com:5051
+      - CORE_PEER_LOCALMSPID=OrgMardMSP
+      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/mardpeer1.orgmard.mard.com/users/Admin@orgmard.mard.com/msp
       - CORE_CHAINCODE_KEEPALIVE=10
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
     command: /bin/bash
@@ -121,8 +172,8 @@ services:
         - ./crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
         - ../SmartContract:/etc/hyperledger/contracts
     networks:
-        - basic
+        - vfa-network
     #depends_on:
     #  - orderer.example.com
-    #  - peer0.org1.example.com
+    #  - kslpeer1.orgkona.konai.com
     #  - couchdb

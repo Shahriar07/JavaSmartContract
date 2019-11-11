@@ -2,7 +2,7 @@
 <html>
 
 <head>
-	<title>Document Management System</title>
+	<title>Hyperledger Block Explorer</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -26,11 +26,30 @@
 	<script type="text/javascript" src="./js/kona/block_explorerjs.js"></script>
 
 	<link rel="stylesheet" href="./css/app.css">
+	<link rel="stylesheet" href="./css/popup.css">
 	<link rel="stylesheet" href="./css/next_previous.css">
 
 </head>
 
 <body>
+
+	<div class="popup-container" id="popup-container">
+		<div class="popup-content">
+			<div style="width: 100%; height: 40%">
+				<img class="popup-content-img" id="popup-img">
+			</div>
+			<div>
+				<label style="font-size: larger;" id="popup-label-result"></label>
+				<br>
+				<br>
+				<label id="popup-label-msg"></label>
+				<br>
+				<br>
+				<br>
+				<button class="popup-content-button" id="popup-button">OK</button>
+			</div>
+		</div>
+	</div>
 
 	<div id="content">	
 		<div class="topnav">
